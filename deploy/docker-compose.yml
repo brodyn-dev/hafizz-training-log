@@ -40,5 +40,18 @@ services:
     networks:
       - dreeve-network
 
+  # Exposes the app publicly at trainlog.brodynhq.com without opening any router port.
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: dreeve-cloudflared
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
+    depends_on:
+      - app
+    networks:
+      - dreeve-network
+
 networks:
   dreeve-network:
