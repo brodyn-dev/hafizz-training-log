@@ -55,6 +55,14 @@ User tengok mockup (bukan app sebenar, Artifact preview je — [link mockup](htt
 
 **Next session:** teruskan guna panduan Hallmark penuh (bukan cuma prinsip manual) untuk custom build sebenar, lepas backfill 1034 aktiviti siap (cron 2:30am patut dah selesaikan baki).
 
+## 2026-11-24 — Fix APP_URL untuk WhatsApp/social link preview
+
+- User nak share link `/dashboard` kat WhatsApp, tanya pasal preview (title/image).
+- **Jumpa bug:** `og:url` tunjuk `http://localhost:8080/dashboard` (salah) sebab `APP_URL` dalam `deploy/.env` masih localhost dari setup awal. **Fixed** → `APP_URL=https://trainlog.brodynhq.com`, container `app`+`daemon` di-recreate (selamat, tiada import aktif waktu tu — jam 9:46 malam, cron baru 2:30 pagi).
+- **Confirmed:** `og:description` auto-personalized dengan baik — `"Hafizz Dzulkifli · 646 activities · 2,689 km · 648 h"` (dari `PageMetadataRenderer.php`, cache-aware).
+- **Nota penting:** sistem auto-generate OG image (avatar+nama+stats, 1200×630) **wujud** dalam Dreeve, tapi **cuma wired untuk route `/activities/{id}` & `/activities/collections/{id}`** — bukan `/dashboard`. Share link `/dashboard` takkan ada gambar preview; share link satu aktiviti individu akan ada.
+- **Belum settle (optional, rendah prioriti):** Strava API app punya "Authorization Callback Domain" masih `localhost` — tak masalah buat masa ni (refresh token dah ada, tak perlu redo OAuth), tapi kalau perlu reconnect Strava suatu hari nanti, kena tukar setting tu ke `brodynhq.com` dulu (ikut APP_URL baru).
+
 ## 2026-11-24 — Penutup sesi: semua clear, sistem OK
 
 **Status akhir sesi ni:**
