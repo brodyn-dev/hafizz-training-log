@@ -4,6 +4,18 @@ Log progress, keputusan, dan pembetulan untuk projek ni. **Entri terbaru di ATAS
 
 ---
 
+## 2026-11-25 — Default dashboard sport-type tabs ke Running (bukan Cycling)
+
+User punya main sport ialah **running**, tapi widget dashboard yang ada tab Cycling/Running/Walking/dll (Weekly stats, Monthly stats, Yearly stats, Distance breakdown, Rolling stats, Peak power outputs, FTP history) semua **default kat Cycling** sebab Cycling paling kiri. Annoying bila share link — orang nampak data cycling dulu, kena klik tukar ke Running.
+
+**Punca:** Shared JS component `public/js/components/tabs.js` punya logic: `$tabs.find(tab => aria-selected === 'true') ?? $tabs[0]` — kalau takde satu pun tab marked `aria-selected="true"` di server-side HTML, dia default ke tab PERTAMA dalam DOM. Order tu ikut `ActivityType` enum punya declaration order (`Ride` sebelum `Run` sebelum `Walk`...), so Cycling sentiasa first.
+
+**Fix:** tambah `aria-selected="{{ activityType == 'Run' ? 'true' : 'false' }}"` kat setiap `<a role="tab">` dalam 7 widget template (yang ada activityType tab tanpa "All" option). **Sengaja hardcode 'Run'** (bukan buat configurable) — ni personal preference untuk fork single-user ni, bukan general Dreeve feature.
+
+**Scope:** widget dengan "All" tab dah ada (day-time-stats, gear-stats, weekday-stats) **TAK disentuh** — "All" dah reasonable default untuk diorang, bukan isu yang user complain.
+
+Verified di localhost — Weekly/Monthly stats confirmed default ke "Running" tab + chart terus tunjuk data Running. Commit `05985cfa3`, pushed.
+
 ## 2026-11-25 — Koreksi: "Challenge consistency" width BUKAN bug, ni widget setting
 
 User still tanya lepas hard refresh kenapa width card tu "masih sama" — rupanya fix `w-full` (entry bawah ni) **tak address root cause sebenar**.
