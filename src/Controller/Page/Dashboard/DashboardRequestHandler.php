@@ -16,6 +16,7 @@ use App\Infrastructure\Cache\Tag\RootCacheTag;
 use App\Infrastructure\Http\Response\HtmlResponse;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Translation\TranslatableMessage;
 use Twig\Environment;
 
@@ -26,6 +27,7 @@ final readonly class DashboardRequestHandler
         private ConfiguredWidgets $configuredWidgets,
         private Environment $twig,
         private PageRenderer $pageRenderer,
+        private UrlGeneratorInterface $urlGenerator,
     ) {
     }
 
@@ -43,6 +45,7 @@ final readonly class DashboardRequestHandler
             navigationSection: NavigationSection::DASHBOARD,
             metadata: new PageMetadata(
                 title: new TranslatableMessage('Dashboard'),
+                imagePath: $this->urlGenerator->generate('dashboard_og_image'),
             ),
         );
     }
