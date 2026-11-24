@@ -19,6 +19,8 @@ User share link dashboard kat WhatsApp, preview cuma teks je (takde gambar) — 
 
 **⚠️ Penting untuk user:** WhatsApp/social app **cache preview link** kat server mereka sendiri bila link di-share kali pertama. Chat lama yang dah ada (tiada gambar) takkan update retroactively — kena **hantar link tu semula sebagai mesej baru** untuk nampak gambar.
 
+**Update — settle:** hantar semula pun masih tak keluar gambar (server confirmed 100% betul via curl + User-Agent WhatsApp). Root cause sebenar: **WhatsApp/Facebook tak pernah berjaya crawl URL ni langsung** (confirmed via Facebook Sharing Debugger: "This URL hasn't been shared on Facebook before"), bukan isu cache lama. **Fix:** `developers.facebook.com/tools/debug/` → paste URL → klik "Scrape Again" → trigger crawl pertama yang berjaya (confirmed preview penuh keluar di debugger tool) → share balik di WhatsApp, **terus jadi**. Pelajaran: lepas setup OG image/metadata baru untuk route baru, guna Facebook Sharing Debugger dulu untuk "prime" crawl pertama sebelum expect WhatsApp/social share preview jalan terus.
+
 ## 2026-11-25 — Setup "Most recent challenges" widget (manual trophy-case scrape)
 
 User compare dashboard kita dengan `demo.dreeve.app`, tanya kenapa widget **"Most recent challenges"** (badge Strava challenges) takde, ingatkan API limitation atau setting toggle.
