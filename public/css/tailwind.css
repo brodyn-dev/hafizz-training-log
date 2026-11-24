@@ -33,10 +33,10 @@
 @plugin "tailwind-scrollbar";
 
 @theme {
-    --font-sans: Inter, ui-sans-serif, system-ui;
+    --font-sans: Manrope, ui-sans-serif, system-ui;
     --text-xxs: 0.625rem;
-    --color-primary: #F26722;
-    --color-primary-soft: #FFF1E9;
+    --color-primary: #E8552A;
+    --color-primary-soft: #FBE9E2;
     --color-grey-yo: #cccccc;
 }
 

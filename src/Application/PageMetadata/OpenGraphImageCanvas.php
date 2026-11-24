@@ -22,7 +22,7 @@ final readonly class OpenGraphImageCanvas
     ) {
         $this->image = imagecreatetruecolor(self::WIDTH, self::HEIGHT);
         imagefill($this->image, 0, 0, $this->color(0xFFFFFF));
-        imagefilledrectangle($this->image, 0, self::HEIGHT - 16, self::WIDTH, self::HEIGHT, $this->color(0xFC5200));
+        imagefilledrectangle($this->image, 0, self::HEIGHT - 16, self::WIDTH, self::HEIGHT, $this->color(0xE8552A));
     }
 
     public function drawHeader(string $athleteName, ?string $profilePicture): void

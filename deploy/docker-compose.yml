@@ -1,7 +1,7 @@
 services:
   app:
-    # The Dreeve Docker image is available on Docker Hub and the GitHub Container Registry
-    image: robiningelbrecht/dreeve:latest
+    # Custom-built from our fork (design tweaks) instead of the published image.
+    image: dreeve-custom:local
     container_name: dreeve
     restart: unless-stopped
     volumes:
@@ -23,7 +23,7 @@ services:
 
   # This container runs the recurring background tasks:
   daemon:
-    image: robiningelbrecht/dreeve:latest
+    image: dreeve-custom:local
     container_name: dreeve-daemon
     restart: unless-stopped
     volumes:
