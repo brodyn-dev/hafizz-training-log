@@ -36,6 +36,22 @@ Log progress, keputusan, dan pembetulan untuk projek ni. **Entri terbaru di ATAS
 - Checkout `origin/master` → semua codebase Dreeve (PHP/Symfony) kini dalam folder projek ni, sekali dengan CLAUDE.md/PROGRESS.md/assets/ yang kita dah buat (tiada collision nama fail).
 - Commit + push: CLAUDE.md, PROGRESS.md, assets/app-icon.png, skills-lock.json berjaya push ke `origin/master` (commit `cf69e7b01`).
 - **`.env.local` dah dicipta** (kosong, placeholder) — fail ni **ignored by git** (dalam `.gitignore` sedia ada: `/.env.local`), tempat selamat untuk simpan STRAVA_CLIENT_ID/SECRET/REFRESH_TOKEN sebenar. User kena isi sendiri terus dalam fail (bukan hantar value kat chat).
+## 2026-11-24 — Penutup sesi: semua clear, sistem OK
+
+**Status akhir sesi ni:**
+- ✅ 3 container Docker jalan: `dreeve` (healthy), `dreeve-daemon` (healthy), `dreeve-cloudflared`
+- ✅ Public URL **https://trainlog.brodynhq.com/dashboard** — confirmed HTTP 200 (external curl)
+- ✅ Local URL **http://localhost:8080/dashboard** — confirmed HTTP 200
+- ✅ Git: working tree clean, semua commit pushed ke `origin/master` (github.com/brodyn-dev/hafizz-training-log), tiada unpushed changes
+- ✅ Secrets selamat: `deploy/.env` (Strava Client ID/Secret/Refresh Token, Cloudflare Tunnel token, admin password hash, APP_SECRET) confirmed **gitignored**, tak pernah masuk git history
+- ⏳ Backfill import ~600+/1034 aktiviti — baki akan sambung **automatik** via scheduled cron (`30 2 * * *`, 2:30 pagi) — tak perlu buat apa-apa
+
+**Untuk sambung kerja lepas ni (chat baru pun boleh):**
+1. Baca PROGRESS.md ni dari atas (CLAUDE.md dah arahkan macam tu)
+2. Check `docker ps` — patut semua 3 container masih "Up" (kalau laptop/Docker Desktop tak dimatikan)
+3. Check progress import kalau nak tahu dah berapa banyak masuk (`docker compose exec app bin/console` ada command relevant, atau tengok terus di dashboard "Activities" count)
+4. Benda yang belum settle/boleh explore lepas ni: custom UI/design (Hallmark), tambah Garmin connector (kalau nak), rename nama fail assets/app-icon.png jadi lebih descriptive, consider domain `nadianalytics.com` ke tidak untuk projek lain
+
 ## 2026-11-24 — Dreeve berjaya jalan (containers healthy)
 
 - Docker Desktop install berjaya (WSL2 backend, All-users install). Sempat jumpa isu "WSL needs updating" → fix dengan `wsl --update`, restart Docker Desktop app.
