@@ -43,7 +43,8 @@ Log progress, keputusan, dan pembetulan untuk projek ni. **Entri terbaru di ATAS
 - **Nota penting (nearly tersilap):** generate `ADMIN_PASSWORD_HASH` guna `echo "<password>" | docker compose exec -T app bin/console security:hash-password --no-interaction -` (bukan interactive prompt — ada isu `stty`/hidden-input dalam container Alpine). User accidentally generate hash guna password contoh yang saya bagi dulu (`PasswordAwak123`) — **dibetulkan**, generate semula dengan password sebenar.
 - **Bug ditangkap & dibetulkan:** hash password yang diisi ke `.env` **tak di-wrap dalam single quote** pada percubaan pertama → Docker Compose interpolate `$` dalam hash jadi variable (`"RIMAkS" variable is not set` warning) → hash jadi corrupt. Dibetulkan dengan wrap `ADMIN_PASSWORD_HASH='...'` — recreate container, warning hilang.
 - `curl localhost:8080` → HTTP 302 (redirect ke login page) — app jalan betul.
-- **Next:** buka `http://localhost:8080` di browser, login (username `admin` + password yang user set), lepas tu complete Strava OAuth flow untuk dapat refresh token sebenar, check map visibility setting, run `app:import:strava`.
+- **Update:** Login admin + Strava OAuth flow berjaya — "You're connected". Refresh token sebenar dah diisi ke `deploy/.env`, container di-restart, healthy.
+- **Next:** klik "Open the app", confirm app dashboard accessible, then run `docker compose exec app bin/console app:import:strava` untuk import activity history. Lepas tu check map visibility setting di strava.com/settings/privacy.
 
 ## 2026-11-24 — Status semasa: tunggu restart lepas install Docker Desktop
 
