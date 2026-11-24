@@ -44,7 +44,9 @@ Log progress, keputusan, dan pembetulan untuk projek ni. **Entri terbaru di ATAS
 - **Bug ditangkap & dibetulkan:** hash password yang diisi ke `.env` **tak di-wrap dalam single quote** pada percubaan pertama → Docker Compose interpolate `$` dalam hash jadi variable (`"RIMAkS" variable is not set` warning) → hash jadi corrupt. Dibetulkan dengan wrap `ADMIN_PASSWORD_HASH='...'` — recreate container, warning hilang.
 - `curl localhost:8080` → HTTP 302 (redirect ke login page) — app jalan betul.
 - **Update:** Login admin + Strava OAuth flow berjaya — "You're connected". Refresh token sebenar dah diisi ke `deploy/.env`, container di-restart, healthy.
-- **Next:** klik "Open the app", confirm app dashboard accessible, then run `docker compose exec app bin/console app:import:strava` untuk import activity history. Lepas tu check map visibility setting di strava.com/settings/privacy.
+- **Update:** Import run #1 siap — 250/1034 aktiviti imported, 0 error/skip, exit code 0 (~46 min, kena rate-limit breather sekali). Import jalan dalam batch (ikut rate limit Strava), bukan semua sekali — kena run `app:import:strava` berulang kali, atau setup auto-schedule di admin panel (**Settings > Scheduled actions**, stravaApi mode). Import run #2 sedang jalan di background.
+- **Next:** teruskan run import sampai 1034/1034, setup scheduled action untuk auto-import, check map visibility setting di strava.com/settings/privacy.
+- **Keputusan hosting (belum confirm user):** nak guna Cloudflare Tunnel (percuma, dua domain user — nadianalytics.com & brodynhq.com — dah di Cloudflare NS) untuk dapat public link. Cadangan: domain **brodynhq.com** (personal, bukan domain kerja), subdomain **training.brodynhq.com** (elak guna "strava" dalam nama ikut brand guideline). User tanya pasal subdomain tak clash dengan website sedia ada — confirmed selamat (DNS record berasingan). **Tunggu user confirm domain/subdomain pilihan sebelum setup Cloudflare Tunnel.**
 
 ## 2026-11-24 — Status semasa: tunggu restart lepas install Docker Desktop
 
