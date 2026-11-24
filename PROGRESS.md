@@ -4,6 +4,16 @@ Log progress, keputusan, dan pembetulan untuk projek ni. **Entri terbaru di ATAS
 
 ---
 
+## 2026-11-25 — Fix bug: widget "Challenge consistency" table tak full width
+
+User perasan table kat widget "Challenge consistency" (dashboard) tak stretch sampai tepi card, lain dari widget Yearly Stats di atas dia yang full width.
+
+**Punca:** `templates/html/dashboard/widget/widget--challenge-consistency.html.twig` — `<table>` tu tak ada class `w-full`, unlike semua table widget lain (contoh `widget--yearly-stats.html.twig` yang ada `class="w-full ..."`). Table tanpa `w-full` auto shrink ikut content, bukan stretch ikut card.
+
+**Fix:** tambah `w-full` kat table tu. Ni **pre-existing bug upstream Dreeve**, bukan dari rebrand kita.
+
+Rebuild: docker image → recreate `app` → `app:cache:render:clear` (ikut checklist yang dah ditambah). Verified di localhost — table dah full width match Yearly Stats. Commit `014f30091`, pushed.
+
 ## 2026-11-25 — Lengkapkan design spec yang tercicir (Hanken Grotesk + tabular-nums)
 
 User tanya: "redesign ni dah follow skill no-ai-slop dan hallmark?" — jawapan jujur lepas check code: **tak sepenuhnya**.
