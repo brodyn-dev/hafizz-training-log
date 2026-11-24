@@ -9,6 +9,7 @@
                 {% for activityType,distanceBreakdown in distanceBreakdowns %}
                     <li role="presentation">
                         <a href="#" data-tabs-target="#distanceBreakdown{{ activityType }}{{ uniqueId }}" role="tab"
+                           aria-selected="{{ activityType == 'Run' ? 'true' : 'false' }}"
                            aria-controls="distanceBreakdown{{ activityType }}{{ uniqueId }}">
                             {{ activityTypeFrom(activityType)|trans }}
                         </a>

@@ -27,6 +27,7 @@
                         {% for activityType,chart in yearlyStatsCharts %}
                             <li role="presentation">
                                 <a href="#" data-tabs-target="#yearlyStats{{ activityType }}{{ context.value }}{{ uniqueId }}" role="tab"
+                                   aria-selected="{{ activityType == 'Run' ? 'true' : 'false' }}"
                                    aria-controls="yearlyStats{{ activityType }}{{ context.value }}{{ uniqueId }}">
                                     {{ activityTypeFrom(activityType)|trans }}
                                 </a>

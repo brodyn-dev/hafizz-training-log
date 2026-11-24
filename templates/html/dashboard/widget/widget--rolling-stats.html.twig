@@ -16,6 +16,7 @@
                 {% for activityType,chart in rollingStatsCharts %}
                     <li role="presentation">
                         <a href="#" data-tabs-target="#rollingStats{{ activityType }}{{ uniqueId }}" role="tab"
+                           aria-selected="{{ activityType == 'Run' ? 'true' : 'false' }}"
                            aria-controls="rollingStats{{ activityType }}{{ uniqueId }}">
                             {{ activityTypeFrom(activityType)|trans }}
                         </a>

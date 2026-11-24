@@ -8,6 +8,7 @@
                 {% for activityType,chart in ftpHistoryCharts %}
                     <li role="presentation">
                         <a href="#" data-tabs-target="#ftpHistory{{ activityType }}{{ uniqueId }}" role="tab"
+                           aria-selected="{{ activityType == 'Run' ? 'true' : 'false' }}"
                            aria-controls="ftpHistory{{ activityType }}{{ uniqueId }}">
                             {{ activityTypeFrom(activityType)|trans }}
                         </a>

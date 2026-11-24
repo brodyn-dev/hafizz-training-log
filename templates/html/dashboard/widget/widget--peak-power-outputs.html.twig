@@ -12,6 +12,7 @@
                 {% for activityType,powerOutputs in powerOutputsPerActivityType %}
                     <li role="presentation">
                         <a href="#" data-tabs-target="#powerOutput{{ activityType }}{{ uniqueId }}" role="tab"
+                           aria-selected="{{ activityType == 'Run' ? 'true' : 'false' }}"
                            aria-controls="powerOutput{{ activityType }}{{ uniqueId }}">
                             {{ activityTypeFrom(activityType)|trans }}
                         </a>

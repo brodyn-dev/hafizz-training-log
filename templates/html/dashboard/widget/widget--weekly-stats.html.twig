@@ -9,6 +9,7 @@
                 {% for activityType,chart in weeklyDistanceCharts %}
                     <li role="presentation">
                         <a href="#" data-tabs-target="#weeklyDistances{{ activityType }}{{ uniqueId }}" role="tab"
+                           aria-selected="{{ activityType == 'Run' ? 'true' : 'false' }}"
                            aria-controls="weeklyDistances{{ activityType }}{{ uniqueId }}">
                             {{ activityTypeFrom(activityType)|trans }}
                         </a>
