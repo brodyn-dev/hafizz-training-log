@@ -63,12 +63,12 @@ User tengok mockup (bukan app sebenar, Artifact preview je — [link mockup](htt
 - **Nota penting:** sistem auto-generate OG image (avatar+nama+stats, 1200×630) **wujud** dalam Dreeve, tapi **cuma wired untuk route `/activities/{id}` & `/activities/collections/{id}`** — bukan `/dashboard`. Share link `/dashboard` takkan ada gambar preview; share link satu aktiviti individu akan ada.
 - **Belum settle (optional, rendah prioriti):** Strava API app punya "Authorization Callback Domain" masih `localhost` — tak masalah buat masa ni (refresh token dah ada, tak perlu redo OAuth), tapi kalau perlu reconnect Strava suatu hari nanti, kena tukar setting tu ke `brodynhq.com` dulu (ikut APP_URL baru).
 
-## 2026-11-24 — Backfill import SIAP (malam ni, tak payah tunggu cron)
+## 2026-11-24 — Backfill import: BELUM siap (kena Strava DAILY rate limit, bukan "habis")
 
 - User lari petang/malam ni → run manual import, aktiviti baru terus masuk (1034→1035 total Strava).
-- Run seterusnya (manual, sebab user malas tunggu 2:30am) — lompat terus 646→876/1035, lepas tu run lagi sekali **0 aktiviti baru, siap dalam 11 saat** → tanda backlog dah habis.
-- **Total tersimpan di Dreeve: 876 aktiviti, 3,684 km, 865 jam** (confirmed via `og:description` dashboard). Beza dengan "1035" dari Strava API kemungkinan sebab sebahagian entry (manual/tiada GPS data) tak fully importable — normal.
-- Cron 2:30am akan tetap jalan automatik macam biasa (rutin check), tapi backlog utama **dah settle malam ni**.
+- Run seterusnya lompat 646→876/1035, lepas tu run #3 "0 aktiviti baru, 11 saat" — **mulanya saya silap sangka ni maksud backlog dah habis**. Betul-betul check log penuh: sebenarnya kena **"You reached the daily Strava API rate limit. You will need to import the rest of your data tomorrow"** — run tu terus abort awal, bukan scan habis.
+- **Status sebenar:** 876/1035 (baki ~159 lagi belum masuk), block oleh Strava daily quota (bukan 15-min window biasa).
+- **Nota penting untuk esok:** had harian Strava biasanya reset ~tengah malam UTC (~8 pagi waktu Malaysia). Cron `30 2 * * *` (2:30 pagi MYT = ~18:30 UTC hari sebelum) **kemungkinan masih kena block** sebab belum sempat reset lagi waktu tu. Kalau macam tu, tak rosak apa-apa — tunggu lepas ~8 pagi MYT, retry manual (`docker compose exec app bin/console app:import:strava`) patut berjaya sambung baki.
 
 ## 2026-11-24 — Penutup sesi: semua clear, sistem OK
 
