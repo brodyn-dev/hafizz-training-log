@@ -20,10 +20,10 @@ User report: button Theme di profile dropdown "tak berfungsi seperti sepatutnya"
 - **Verified fix** di `localhost:8080` (bypass Cloudflare cache): theme toggle sync betul lepas klik, lepas reopen dropdown, dan lepas full page reload — semua 3 skenario confirmed consistent.
 - Commit `694fbf7b4`, pushed ke `origin/master`.
 
-**⚠️ Belum settle — Cloudflare CDN cache:**
-- Public URL `trainlog.brodynhq.com` masih serve **app.min.js LAMA** (confirmed via `cf-cache-status: HIT`, `Cache-Control: immutable, max-age=31536000`). Punca: URL asset guna cache-bust ikut app version (`?v5.9.1`) bukan content-hash — version number tak berubah, so Cloudflare ingat file tu sama, cache 1 tahun.
-- **Next action (kena user buat sendiri, perlukan akses Cloudflare dashboard):** pergi Cloudflare dashboard → zone `brodynhq.com` → Caching → Configuration → **"Purge Everything"** (atau purge by URL untuk `js/dist/app.min.js`). Action ni selamat & reversible, cuma clear CDN cache, paksa origin re-fetch.
-- Lepas purge, confirm fix dah live dengan reload `trainlog.brodynhq.com/dashboard` + test toggle Theme di profile menu.
+**Cloudflare CDN cache — SETTLE:**
+- Punca awal: public URL serve app.min.js LAMA sebab cache-bust guna app version (`?v5.9.1`) bukan content-hash — version tak berubah, Cloudflare cache 1 tahun (`immutable`).
+- User dah purge cache (Cloudflare dashboard → Caching → Purge Everything). **Confirmed via curl:** live `app.min.js` kini byte-for-byte sama dengan fail fixed tempatan (md5 match), `Age` header reset (fresh fetch dari origin).
+- **Fully resolved** — tak perlu further action.
 
 ## 2026-11-24 — Round 3: pivot ke fork open-source + hosting settle
 
