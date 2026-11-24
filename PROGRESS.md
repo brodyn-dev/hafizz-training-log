@@ -63,6 +63,13 @@ User tengok mockup (bukan app sebenar, Artifact preview je — [link mockup](htt
 - **Nota penting:** sistem auto-generate OG image (avatar+nama+stats, 1200×630) **wujud** dalam Dreeve, tapi **cuma wired untuk route `/activities/{id}` & `/activities/collections/{id}`** — bukan `/dashboard`. Share link `/dashboard` takkan ada gambar preview; share link satu aktiviti individu akan ada.
 - **Belum settle (optional, rendah prioriti):** Strava API app punya "Authorization Callback Domain" masih `localhost` — tak masalah buat masa ni (refresh token dah ada, tak perlu redo OAuth), tapi kalau perlu reconnect Strava suatu hari nanti, kena tukar setting tu ke `brodynhq.com` dulu (ikut APP_URL baru).
 
+## 2026-11-24 — Backfill import SIAP (malam ni, tak payah tunggu cron)
+
+- User lari petang/malam ni → run manual import, aktiviti baru terus masuk (1034→1035 total Strava).
+- Run seterusnya (manual, sebab user malas tunggu 2:30am) — lompat terus 646→876/1035, lepas tu run lagi sekali **0 aktiviti baru, siap dalam 11 saat** → tanda backlog dah habis.
+- **Total tersimpan di Dreeve: 876 aktiviti, 3,684 km, 865 jam** (confirmed via `og:description` dashboard). Beza dengan "1035" dari Strava API kemungkinan sebab sebahagian entry (manual/tiada GPS data) tak fully importable — normal.
+- Cron 2:30am akan tetap jalan automatik macam biasa (rutin check), tapi backlog utama **dah settle malam ni**.
+
 ## 2026-11-24 — Penutup sesi: semua clear, sistem OK
 
 **Status akhir sesi ni:**
