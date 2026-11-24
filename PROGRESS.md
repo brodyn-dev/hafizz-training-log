@@ -48,7 +48,15 @@ Log progress, keputusan, dan pembetulan untuk projek ni. **Entri terbaru di ATAS
 - **Next:** teruskan run import sampai 1034/1034, setup scheduled action untuk auto-import, check map visibility setting di strava.com/settings/privacy.
 - **Update branding (selesai):** "App subtitle" (Settings → Appearance) diisi **"Hafizz's Training Log"** — keluar public di navbar ("Dreeve | Hafizz's Training Log"), tak perlu login untuk nampak. Profile picture URL (Settings → General) diisi dengan URL foto Strava (`https://dgalywyvr863hv.cloudfront.net/pictures/athletes/24457623/10602771/4/large.jpg`) — confirmed berjaya save.
 - **Update import:** batch #2 jalan — 416/1034 aktiviti (ikut dashboard "Activities 416"), masih proceed ikut rate limit Strava.
-- **Keputusan hosting (belum confirm user):** nak guna Cloudflare Tunnel (percuma, dua domain user — nadianalytics.com & brodynhq.com — dah di Cloudflare NS) untuk dapat public link. Cadangan: domain **brodynhq.com** (personal, bukan domain kerja), subdomain **training.brodynhq.com** (elak guna "strava" dalam nama ikut brand guideline). User tanya pasal subdomain tak clash dengan website sedia ada — confirmed selamat (DNS record berasingan). **Tunggu user confirm domain/subdomain pilihan sebelum setup Cloudflare Tunnel.**
+## 2026-11-24 — Hosting siap! Public URL jalan
+
+- Subdomain final settle: **`trainlog.brodynhq.com`** (brainstorm: training→gains→grind [reject, nama Grindr]→trainlog, padan dengan nama app Strava "Hafizz Training Log").
+- Service `cloudflared` ditambah ke `deploy/docker-compose.yml`, token di `deploy/.env` (`CLOUDFLARE_TUNNEL_TOKEN`, gitignored).
+- User buat tunnel "dreeve-trainlog" di Cloudflare Zero Trust dashboard sendiri (Networking → Tunnels → Create Tunnel → Docker), copy token, docker compose up -d.
+- Nota: masa `docker compose up -d` untuk start cloudflared, container `app` ter-**recreate**, sebabkan import batch #3 yang sedang jalan kena SIGKILL (exit 137). Di-resume semula — Dreeve resumable by design, tak ada data loss.
+- Route ditambah di Cloudflare: Published application, hostname `trainlog.brodynhq.com` → Service URL `http://app:8080`. DNS CNAME auto-created oleh Cloudflare.
+- **Confirmed public & jalan:** `curl https://trainlog.brodynhq.com/dashboard` dan `http://` versi dua-dua return **HTTP 200** dari luar. SSL automatik dari Cloudflare.
+- ⚠️ Tunnel token sempat ter-paste dalam chat (bukan terus dalam .env macam disaran) — **disarankan rotate token** di Cloudflare dashboard (butang "Rotate token" di tunnel overview) bila sempat, walaupun risiko rendah (token tu private ke Cloudflare account, bukan credential Strava/orang lain).
 
 ## 2026-11-24 — Status semasa: tunggu restart lepas install Docker Desktop
 
