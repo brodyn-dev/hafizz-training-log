@@ -36,6 +36,21 @@ Log progress, keputusan, dan pembetulan untuk projek ni. **Entri terbaru di ATAS
 - Checkout `origin/master` → semua codebase Dreeve (PHP/Symfony) kini dalam folder projek ni, sekali dengan CLAUDE.md/PROGRESS.md/assets/ yang kita dah buat (tiada collision nama fail).
 - Commit + push: CLAUDE.md, PROGRESS.md, assets/app-icon.png, skills-lock.json berjaya push ke `origin/master` (commit `cf69e7b01`).
 - **`.env.local` dah dicipta** (kosong, placeholder) — fail ni **ignored by git** (dalam `.gitignore` sedia ada: `/.env.local`), tempat selamat untuk simpan STRAVA_CLIENT_ID/SECRET/REFRESH_TOKEN sebenar. User kena isi sendiri terus dalam fail (bukan hantar value kat chat).
+## 2026-11-24 — Status semasa: tunggu restart lepas install Docker Desktop
+
+- User tengah install **Docker Desktop** (All-users installation, WSL 2 backend, tanpa Windows Containers) — installer berjaya lepas enable "Virtual Machine Platform". User akan **restart laptop** sekarang.
+- **NEXT STEP lepas restart:**
+  1. Buka Docker Desktop sekali (first-run setup, biar dia settle)
+  2. Verify Docker jalan: `docker --version` / `docker compose version`
+  3. Isi `deploy/.env` — `STRAVA_CLIENT_ID` + `STRAVA_CLIENT_SECRET` (dari strava.com/settings/api, app "Hafizz Training Log", Client ID = `300302`). **Jangan isi `STRAVA_REFRESH_TOKEN`** — biar `replace-me`.
+  4. `cd deploy && docker compose up -d`
+  5. Generate admin password hash: `docker compose exec app bin/console security:hash-password` → masukkan hasil ke `ADMIN_PASSWORD_HASH` dalam `deploy/.env` (ingat: kalau ada `$` dalam hash, guna single-quote atau double setiap `$` — rujuk docs/getting-started/installation.mdx)
+  6. `docker compose up -d` sekali lagi (recreate container untuk apply .env baru)
+  7. Buka `http://localhost:8080` → login admin → ikut OAuth flow Strava (first-launch) untuk dapat refresh token sebenar
+  8. Check Strava privacy setting (strava.com/settings/privacy) — "Hide your activity maps from others completely" kena OFF
+  9. Run import: `docker compose exec app bin/console app:import:strava`
+- Semua fail setup (docker-compose.yml, .gitignore) dah commit & push ke fork. `deploy/.env` sengaja TAK commit (gitignored, ada secret).
+
 ## 2026-11-24 — Betulkan approach deployment (koreksi penting)
 
 - **Koreksi:** `.env.local` di root repo (yang kita buat awal) **salah konteks** — tu untuk contributor Dreeve run test suite/dev dari source, bukan untuk deploy/run app sebenar. Dah **dibuang**.
