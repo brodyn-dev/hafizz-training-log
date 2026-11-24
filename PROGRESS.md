@@ -4,6 +4,16 @@ Log progress, keputusan, dan pembetulan untuk projek ni. **Entri terbaru di ATAS
 
 ---
 
+## 2026-11-25 — Koreksi: "Challenge consistency" width BUKAN bug, ni widget setting
+
+User still tanya lepas hard refresh kenapa width card tu "masih sama" — rupanya fix `w-full` (entry bawah ni) **tak address root cause sebenar**.
+
+**Punca sebenar:** Setiap widget dashboard Dreeve ada setting **width** (33%/50%/66%/100%) yang user boleh ubah sendiri kat **Admin → Settings → Dashboard** (route `/admin/settings/dashboard`). Default config untuk `challengeConsistency` dalam `src/Domain/Dashboard/DashboardLayout.php:52` ialah **`width: 50`** (sepatutnya duduk sebelah widget 50% lain, tapi user punya layout tiada widget sebelah dia, so nampak macam "tak penuh").
+
+**Status:** `w-full` kat `<table>` (commit `014f30091`) tak salah/berbahaya — cuma tak cukup, sebab parent card (widget wrapper) dah memang sengaja 50% width ikut config widget tu, bukan isu table shrink. **Betul punya fix: user ubah sendiri width widget tu ke 100% melalui Admin UI** — bukan code change. Takde code rollback diperlukan (perubahan `w-full` tu masih valid/harmless untuk bila-bila widget tu betul-betul dikonfigur full width).
+
+**Pelajaran:** lepas ni, sebelum terus assume "CSS bug" untuk isu layout/width widget dashboard, check dulu `src/Domain/Dashboard/DashboardLayout.php` punya default `width` config & Admin → Settings → Dashboard punya per-widget width setting — mungkin ia "as designed", bukan bug.
+
 ## 2026-11-25 — Fix bug: widget "Challenge consistency" table tak full width
 
 User perasan table kat widget "Challenge consistency" (dashboard) tak stretch sampai tepi card, lain dari widget Yearly Stats di atas dia yang full width.
