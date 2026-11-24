@@ -36,6 +36,25 @@ Log progress, keputusan, dan pembetulan untuk projek ni. **Entri terbaru di ATAS
 - Checkout `origin/master` → semua codebase Dreeve (PHP/Symfony) kini dalam folder projek ni, sekali dengan CLAUDE.md/PROGRESS.md/assets/ yang kita dah buat (tiada collision nama fail).
 - Commit + push: CLAUDE.md, PROGRESS.md, assets/app-icon.png, skills-lock.json berjaya push ke `origin/master` (commit `cf69e7b01`).
 - **`.env.local` dah dicipta** (kosong, placeholder) — fail ni **ignored by git** (dalam `.gitignore` sedia ada: `/.env.local`), tempat selamat untuk simpan STRAVA_CLIENT_ID/SECRET/REFRESH_TOKEN sebenar. User kena isi sendiri terus dalam fail (bukan hantar value kat chat).
+## 2026-11-24 — Design direction APPROVED (belum apply ke app sebenar)
+
+User tengok mockup (bukan app sebenar, Artifact preview je — [link mockup](https://claude.ai/artifact/MaYaLhgoSUXDdaWVMVhZRJ)) dan **approve** arah design ni untuk custom build nanti:
+
+- **Mode:** Light (bukan dark asal Dreeve) — light mode sebenarnya **dah wujud** dalam app asal (toggle Settings → Theme), cuma kita nak custom palette lagi premium dari default-nya
+- **Warna/accent:** Teruskan dengan **oren** (refine dari oren asal Dreeve, versi light: `#e8552a` atas latar putih/light neutral `#f3f4f6`) — bukan pilih Brass/Moss/Petrol yang dicadang
+- **Font:** **Manrope** (body) + **Hanken Grotesk** (heading/nombor besar) — ganti Inter+Space Grotesk asal (yang rupanya "overused AI default" ikut Hallmark). Dua-dua Google Fonts, percuma
+- **Nombor:** semua figure (stat card, chip jarak) guna `font-variant-numeric: tabular-nums` untuk digit align kemas
+- **Layout/posisi/fungsi:** **TIDAK berubah langsung** — user explicit nak warna/font/feel je, bukan struktur
+
+**Asas keputusan:** guna prinsip skill **Hallmark** (anti-AI-slop design, dah install global) — elak purple-blue gradient, elak "near-black+neon pop", elak font banned-list (Inter, Roboto, dll), guna 1 accent je + neutral dengan hue bias deliberate.
+
+**Belum settle:** macam mana nak apply ni ke app SEBENAR. Ingat — kita run dari **published Docker image**, bukan build dari source. Untuk betul-betul ubah warna/font Dreeve, kena:
+1. Edit `tokens`/Tailwind config + template yang relevan dalam fork kita
+2. Switch `deploy/docker-compose.yml` dari `image:` ke `build:` (guna `docker/app/Dockerfile` yang dah ada dalam repo — tapi **tiada composer install/npm build step** dalam Dockerfile tu, kena figure out macam mana asset compile — mungkin kena tambah build stage sendiri)
+3. Rebuild (anggaran 10-20 minit first time) — **buat ni lepas backfill import siap**, elak ulang insiden container-recreate-interrupt-import macam hari ni (3 kali berlaku)
+
+**Next session:** teruskan guna panduan Hallmark penuh (bukan cuma prinsip manual) untuk custom build sebenar, lepas backfill 1034 aktiviti siap (cron 2:30am patut dah selesaikan baki).
+
 ## 2026-11-24 — Penutup sesi: semua clear, sistem OK
 
 **Status akhir sesi ni:**
