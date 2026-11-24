@@ -17,7 +17,7 @@ final readonly class SegmentEffortVsHeartRateChart
     /** @var array{int, int, int} */
     private const array COLOR_OLDEST = [212, 212, 212];
     /** @var array{int, int, int} */
-    private const array COLOR_RECENT = [227, 73, 2];
+    private const array COLOR_RECENT = [95, 122, 77];
 
     private function __construct(
         private SegmentEfforts $segmentEfforts,
@@ -159,7 +159,7 @@ final readonly class SegmentEffortVsHeartRateChart
                 'itemWidth' => 12,
                 'itemHeight' => 100,
                 'inRange' => [
-                    'color' => ['#d4d4d4', '#E34902'],
+                    'color' => ['#d4d4d4', '#5F7A4D'],
                 ],
                 'textStyle' => [
                     'fontSize' => 11,

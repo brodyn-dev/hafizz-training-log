@@ -36,9 +36,21 @@
     --font-sans: Manrope, ui-sans-serif, system-ui;
     --font-heading: "Hanken Grotesk", ui-sans-serif, system-ui;
     --text-xxs: 0.625rem;
-    --color-primary: #E8552A;
-    --color-primary-soft: #FBE9E2;
+    --color-primary: #5F7A4D;
+    --color-primary-soft: #E6EBE0;
     --color-grey-yo: #cccccc;
+
+    /* Moss theme: every neutral carries the same green hue bias as the accent, not plain grey. */
+    --color-gray-50: #F9FBF9;
+    --color-gray-100: #F0F4F1;
+    --color-gray-200: #E2E9E3;
+    --color-gray-300: #CCD7CD;
+    --color-gray-400: #9AAC9C;
+    --color-gray-500: #68826B;
+    --color-gray-600: #4C614E;
+    --color-gray-700: #354637;
+    --color-gray-800: #232F25;
+    --color-gray-900: #151E17;
 }
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));

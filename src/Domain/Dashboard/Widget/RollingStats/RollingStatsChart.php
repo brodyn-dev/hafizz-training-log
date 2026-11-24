@@ -81,7 +81,7 @@ final readonly class RollingStatsChart
             'showSymbol' => false,
             'areaStyle' => [
                 'opacity' => 0.3,
-                'color' => 'rgba(227, 73, 2, 0.3)',
+                'color' => 'rgba(95, 122, 77, 0.3)',
             ],
             'emphasis' => [
                 'focus' => 'series',
@@ -134,7 +134,7 @@ final readonly class RollingStatsChart
             'animation' => true,
             'backgroundColor' => null,
             'color' => [
-                '#E34902',
+                '#5F7A4D',
             ],
             'grid' => [
                 'left' => '10px',

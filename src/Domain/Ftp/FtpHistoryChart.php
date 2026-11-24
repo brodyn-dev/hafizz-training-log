@@ -141,7 +141,7 @@ final readonly class FtpHistoryChart
                 [
                     'name' => 'FTP watts',
                     'color' => [
-                        '#E34902',
+                        '#5F7A4D',
                     ],
                     'type' => 'line',
                     'smooth' => false,

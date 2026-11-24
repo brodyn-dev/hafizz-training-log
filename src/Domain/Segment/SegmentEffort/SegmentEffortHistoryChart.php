@@ -79,7 +79,7 @@ final readonly class SegmentEffortHistoryChart
             'series' => [
                 [
                     'color' => [
-                        '#E34902',
+                        '#5F7A4D',
                     ],
                     'type' => 'scatter',
                     'data' => $data,

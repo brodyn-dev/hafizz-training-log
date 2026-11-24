@@ -84,14 +84,14 @@ final readonly class ActivityStartTimesChart
             'series' => [
                 [
                     'color' => [
-                        '#E34902',
+                        '#5F7A4D',
                     ],
                     'label' => [
                         'show' => true,
                     ],
                     'areaStyle' => [
                         'opacity' => 0.3,
-                        'color' => 'rgba(227, 73, 2, 0.3)',
+                        'color' => 'rgba(95, 122, 77, 0.3)',
                     ],
                     'type' => 'line',
                     'smooth' => false,

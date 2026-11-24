@@ -50,7 +50,7 @@ final readonly class ActivityLocationsChart
                 'coordinateSystem' => 'geo',
                 'symbolSize' => EChartsCallback::symbolSize(),
                 'itemStyle' => [
-                    'color' => '#E34902',
+                    'color' => '#5F7A4D',
                 ],
                 'encode' => [
                     'tooltip' => 2,
