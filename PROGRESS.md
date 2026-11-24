@@ -4,6 +4,21 @@ Log progress, keputusan, dan pembetulan untuk projek ni. **Entri terbaru di ATAS
 
 ---
 
+## 2026-11-25 — Tambah OG image untuk share link /dashboard
+
+User share link dashboard kat WhatsApp, preview cuma teks je (takde gambar) — rujuk balik nota lama (entri "Fix APP_URL"): OG image auto-generate Dreeve **memang wujud**, tapi **cuma wired untuk `/activities/{id}` & `/activities/collections/{id}`**, bukan `/dashboard`.
+
+**Fix:** buat route baru `/dashboard/og-image.png` (ikut pattern `activity_og_image` yang sedia ada):
+- `src/Domain/Dashboard/DashboardOpenGraphImage.php` — reuse `OpenGraphImageCanvas` yang sama, guna avatar + nama athlete + App Subtitle ("Hafizz's Training Log") sebagai headline + 3 stat (Activities/Distance/Moving time, dari query `FindActivityTotals` yang sama dengan page description).
+- `src/Controller/File/Dashboard/DashboardOgImageRequestHandler.php` — serve PNG, public, cache 1 jam.
+- `DashboardRequestHandler.php` — wire `imagePath` guna route baru tu.
+
+**Verified:** `curl /dashboard/og-image.png` → HTTP 200 image/png, confirmed di localhost & public domain sekali gus (route baru, bukan static asset lama yang kena purge cache). Commit `664c64682`, pushed.
+
+**Nota:** logo Dreeve dalam gambar OG masih oren (`assets/images/manifest/icon-512.png`) — tu fail raster/gambar sebenar, bukan CSS token, so tak ikut moss retheme. Boleh regenerate kalau user nak match betul-betul (out of scope hari ni).
+
+**⚠️ Penting untuk user:** WhatsApp/social app **cache preview link** kat server mereka sendiri bila link di-share kali pertama. Chat lama yang dah ada (tiada gambar) takkan update retroactively — kena **hantar link tu semula sebagai mesej baru** untuk nampak gambar.
+
 ## 2026-11-25 — Setup "Most recent challenges" widget (manual trophy-case scrape)
 
 User compare dashboard kita dengan `demo.dreeve.app`, tanya kenapa widget **"Most recent challenges"** (badge Strava challenges) takde, ingatkan API limitation atau setting toggle.
