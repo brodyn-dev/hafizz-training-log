@@ -34,6 +34,7 @@
 
 @theme {
     --font-sans: Manrope, ui-sans-serif, system-ui;
+    --font-heading: "Hanken Grotesk", ui-sans-serif, system-ui;
     --text-xxs: 0.625rem;
     --color-primary: #E8552A;
     --color-primary-soft: #FBE9E2;
@@ -60,6 +61,10 @@
 
     table tr {
         border-color: var(--color-gray-100, currentColor);
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        font-family: var(--font-heading);
     }
 }
 
