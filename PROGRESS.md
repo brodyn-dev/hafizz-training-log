@@ -4,6 +4,25 @@ Log progress, keputusan, dan pembetulan untuk projek ni. **Entri terbaru di ATAS
 
 ---
 
+## 2026-11-25 — Retheme penuh ke Moss (bukan sekadar tukar accent)
+
+User tanya balik pasal rebrand lama — bila compare dengan demo Dreeve, nampak "sama je" sebab refine oren (`#E8552A`) terlalu rapat dengan oren asal (`#F26722`). User minta cuba kaler lain, mockup light+dark dulu (guna `visualize` widget), pilih **Moss**, dan explicit minta: *"bukan sekadar tukar kaler je... dia theme. the whole vibe tu tukar"* — confirmed ini teknik sebenar dalam skill **Hallmark** (load skill terus kali ni, bukan guna prinsip manual je macam dulu): neutral palette (grey/background/border) kena ikut hue bias sama dengan accent, bukan grey generic Tailwind ditampal warna atas.
+
+**Pilihan akhir:** Moss `#5F7A4D` (accent), + neutral gray scale moss-tinted (hue ~128-132, chroma rendah supaya "smart & senang baca", bukan terlalu sage/farm-editorial).
+
+**Fix (`public/css/tailwind.css` + `public/css/theme/dark-mode.css`):**
+- `--color-primary`/`--color-primary-soft` → moss.
+- **Override `--color-gray-50` hingga `--color-gray-900`** (light default dalam `tailwind.css` + dark dalam `dark-mode.css` punya `[data-theme=dark]` + `.no-dark` block) — sebab Dreeve guna Tailwind punya `bg-gray-*`/`text-gray-*`/`border-gray-*` utility class MERATA dalam semua template, override kat satu tempat ni automatik cascade ke seluruh app tanpa kena edit setiap template.
+
+**Sweep hardcoded accent lain (rupanya banyak tempat tak baca `--color-primary` CSS var langsung):**
+- `map-colors.js` (warna route Leaflet), `scroll-to.css` (decimal RGB), `OpenGraphImageCanvas.php` (bar OG image), badge SVG icons, **60 fail sport-type activity icon** (`templates/svg/sport-types/*.svg` — rupanya ni TAK pernah disentuh masa rebrand oren asal pun, confirmed via git blame, jadi dah lama inconsistent)
+- **6 kelas chart PHP** (Eddington, Weekly/Rolling stats, FTP history, Rewind, Segment effort, Athlete weight) — warna chart (ECharts) di-generate server-side dalam PHP sebagai literal RGB/hex (`rgba(227,73,2,...)`, `#E34902`), **BUKAN** baca CSS variable — ni kenapa chart masih oren walaupun CSS token dah tukar. Pelajaran penting untuk rebrand akan datang: chart color kena check kat PHP punya chart-builder classes, bukan assume semua ikut CSS token.
+- **Sengaja TAK tukar** `#fc5200` (3 fail badge SVG) — tu warna rasmi logo mark Strava sendiri (bukan accent kita), required kekal ikut Strava Brand Guidelines (rujuk [CLAUDE.md](CLAUDE.md)).
+
+**Verified:** localhost light + dark mode, termasuk chart & sidebar active state. Commit `0927dbf75`, pushed.
+
+**⚠️ Macam biasa — kena purge Cloudflare cache lagi** (CSS asset `tailwind.min.css?v5.9.1` cache 1 tahun, same root cause yang dah dicatat sebelum ni) lepas user confirm deploy real.
+
 ## 2026-11-25 — Default dashboard sport-type tabs ke Running (bukan Cycling)
 
 User punya main sport ialah **running**, tapi widget dashboard yang ada tab Cycling/Running/Walking/dll (Weekly stats, Monthly stats, Yearly stats, Distance breakdown, Rolling stats, Peak power outputs, FTP history) semua **default kat Cycling** sebab Cycling paling kiri. Annoying bila share link — orang nampak data cycling dulu, kena klik tukar ke Running.
