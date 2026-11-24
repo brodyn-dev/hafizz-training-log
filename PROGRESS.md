@@ -36,6 +36,15 @@ Log progress, keputusan, dan pembetulan untuk projek ni. **Entri terbaru di ATAS
 - Checkout `origin/master` → semua codebase Dreeve (PHP/Symfony) kini dalam folder projek ni, sekali dengan CLAUDE.md/PROGRESS.md/assets/ yang kita dah buat (tiada collision nama fail).
 - Commit + push: CLAUDE.md, PROGRESS.md, assets/app-icon.png, skills-lock.json berjaya push ke `origin/master` (commit `cf69e7b01`).
 - **`.env.local` dah dicipta** (kosong, placeholder) — fail ni **ignored by git** (dalam `.gitignore` sedia ada: `/.env.local`), tempat selamat untuk simpan STRAVA_CLIENT_ID/SECRET/REFRESH_TOKEN sebenar. User kena isi sendiri terus dalam fail (bukan hantar value kat chat).
+## 2026-11-24 — Dreeve berjaya jalan (containers healthy)
+
+- Docker Desktop install berjaya (WSL2 backend, All-users install). Sempat jumpa isu "WSL needs updating" → fix dengan `wsl --update`, restart Docker Desktop app.
+- `docker compose up -d` di `deploy/` berjaya — container `dreeve` & `dreeve-daemon` status **healthy**.
+- **Nota penting (nearly tersilap):** generate `ADMIN_PASSWORD_HASH` guna `echo "<password>" | docker compose exec -T app bin/console security:hash-password --no-interaction -` (bukan interactive prompt — ada isu `stty`/hidden-input dalam container Alpine). User accidentally generate hash guna password contoh yang saya bagi dulu (`PasswordAwak123`) — **dibetulkan**, generate semula dengan password sebenar.
+- **Bug ditangkap & dibetulkan:** hash password yang diisi ke `.env` **tak di-wrap dalam single quote** pada percubaan pertama → Docker Compose interpolate `$` dalam hash jadi variable (`"RIMAkS" variable is not set` warning) → hash jadi corrupt. Dibetulkan dengan wrap `ADMIN_PASSWORD_HASH='...'` — recreate container, warning hilang.
+- `curl localhost:8080` → HTTP 302 (redirect ke login page) — app jalan betul.
+- **Next:** buka `http://localhost:8080` di browser, login (username `admin` + password yang user set), lepas tu complete Strava OAuth flow untuk dapat refresh token sebenar, check map visibility setting, run `app:import:strava`.
+
 ## 2026-11-24 — Status semasa: tunggu restart lepas install Docker Desktop
 
 - User tengah install **Docker Desktop** (All-users installation, WSL 2 backend, tanpa Windows Containers) — installer berjaya lepas enable "Virtual Machine Platform". User akan **restart laptop** sekarang.
