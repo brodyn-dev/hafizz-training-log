@@ -4,6 +4,20 @@ Log progress, keputusan, dan pembetulan untuk projek ni. **Entri terbaru di ATAS
 
 ---
 
+## 2026-11-25 — Recolor logo Dreeve ke moss + koreksi kesilapan awal
+
+User tanya: kalau tukar logo ke moss, risiko hilang kat dark mode? Jawapan: tak, sebab accent dipilih mid-lightness (bukan match background gelap), confirmed via kira contrast ratio (~4.6:1 light, ~3.9:1 dark) — prinsip sama macam oren asal yang dah consistent kekal visible dua-dua mode.
+
+**Fix:**
+- `logo.svg`, `logo-square.svg` (favicon + app logo) — fc5200 → moss `#5F7A4D`.
+- 5 fail PWA manifest icon PNG (`icon-192/512.png` + maskable variants) — recolor guna PHP GD script (jalan dalam container, sebab host takde PHP), teknik **blend-ratio guna channel Blue** (orange B=0, putih B=255, kira `t=B/255` per pixel, recompute `moss + t*(putih-moss)`) supaya edge anti-aliasing tetap smooth, bukan banding kasar.
+
+**⚠️ Koreksi kesilapan sendiri (penting):** masa moss retheme awal hari ni, saya **sengaja TAK tukar** `#fc5200` dalam 3 fail badge SVG (`svg-dreeve-badge`, `svg-pb-badge`, `svg-zwift-badge`), ingat tu logo rasmi Strava (ikut brand guideline, elak ubah logo Strava). **Rupanya salah** — lepas render `logo.svg` (path SAMA persis dengan yang dalam badge), confirmed tu **logo chart-icon Dreeve sendiri**, cuma kebetulan guna hex oren yang sama dengan brand Strava (`fc5200`) dari zaman asal sebelum rebrand. Confirmed takde mention "Strava" langsung dalam 3 fail badge tu. **Dah betulkan** — 3 fail tu pun kini moss.
+
+**Pelajaran:** jangan assume warna = jenama berdasarkan hex value je (contoh fc5200 = "mesti Strava punya") — kena **render/visual check** bentuk sebenar dulu sebelum putuskan "untouchable". 
+
+Commit `00ffaaefa`, pushed. Verified: favicon nav bar + OG image logo kini moss, edges clean tiada artifact.
+
 ## 2026-11-25 — Tambah OG image untuk share link /dashboard
 
 User share link dashboard kat WhatsApp, preview cuma teks je (takde gambar) — rujuk balik nota lama (entri "Fix APP_URL"): OG image auto-generate Dreeve **memang wujud**, tapi **cuma wired untuk `/activities/{id}` & `/activities/collections/{id}`**, bukan `/dashboard`.
