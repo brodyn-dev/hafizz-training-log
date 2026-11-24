@@ -56,6 +56,7 @@ Log progress, keputusan, dan pembetulan untuk projek ni. **Entri terbaru di ATAS
 - Nota: masa `docker compose up -d` untuk start cloudflared, container `app` ter-**recreate**, sebabkan import batch #3 yang sedang jalan kena SIGKILL (exit 137). Di-resume semula — Dreeve resumable by design, tak ada data loss.
 - Route ditambah di Cloudflare: Published application, hostname `trainlog.brodynhq.com` → Service URL `http://app:8080`. DNS CNAME auto-created oleh Cloudflare.
 - **Confirmed public & jalan:** `curl https://trainlog.brodynhq.com/dashboard` dan `http://` versi dua-dua return **HTTP 200** dari luar. SSL automatik dari Cloudflare.
+- **Scheduled actions diaktifkan:** "Import Strava data" (cron `30 2 * * *`, daily 2:30am) di-tick & save di Admin → Settings → Scheduled actions. Daemon container di-restart (`docker compose restart daemon` je, bukan `up -d`, supaya tak ganggu import manual yang masih jalan di container `app`). Lepas ni, aktiviti baru akan auto-import setiap hari tanpa perlu run command manual.
 - ⚠️ Tunnel token sempat ter-paste dalam chat (bukan terus dalam .env macam disaran) — **disarankan rotate token** di Cloudflare dashboard (butang "Rotate token" di tunnel overview) bila sempat, walaupun risiko rendah (token tu private ke Cloudflare account, bukan credential Strava/orang lain).
 
 ## 2026-11-24 — Status semasa: tunggu restart lepas install Docker Desktop
