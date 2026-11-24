@@ -4,6 +4,27 @@ Log progress, keputusan, dan pembetulan untuk projek ni. **Entri terbaru di ATAS
 
 ---
 
+## 2026-11-25 — Fix bug: Theme toggle (Light/System/Dark) tak sync visual
+
+User report: button Theme di profile dropdown "tak berfungsi seperti sepatutnya".
+
+**Diagnosis (confirmed via test berulang kali di browser, localhost & live):**
+- Theme sebenarnya **BERFUNGSI** — klik Light/Dark/System betul-betul tukar warna app & simpan ke `localStorage`.
+- **Bug sebenar:** highlight (kotak oren) pada icon yang dipilih **tak sync** — lepas klik atau lepas reload, kadang tunjuk takde satu pun terpilih, kadang tunjuk pilihan lain dari yang sepatutnya. Punca: `public/js/layout/dark-mode.js` cuma set radio button `checked` **sekali sahaja** masa page load — tak refresh balik bila dropdown dibuka semula.
+- Ni bug asal upstream Dreeve punya code, bukan sesuatu yang kita rosakkan masa rebrand.
+
+**Fix:**
+- `public/js/components/overlay/dropdown.js` — dispatch custom event `dropdown:opened` bila mana-mana popover dropdown dibuka.
+- `public/js/layout/dark-mode.js` — extract logic sync checked state ke method `syncCheckedState()`, panggil balik setiap kali `dropdown:opened` event fired (bukan sekali je masa load).
+- Rebuild: `webpack` (JS je, tak sentuh CSS/PHP) → `docker build` image `dreeve-custom:local` baru → `docker compose up -d --no-deps --force-recreate app` (elak kacau `daemon`/import, ikut pelajaran insiden container-recreate sebelum ni).
+- **Verified fix** di `localhost:8080` (bypass Cloudflare cache): theme toggle sync betul lepas klik, lepas reopen dropdown, dan lepas full page reload — semua 3 skenario confirmed consistent.
+- Commit `694fbf7b4`, pushed ke `origin/master`.
+
+**⚠️ Belum settle — Cloudflare CDN cache:**
+- Public URL `trainlog.brodynhq.com` masih serve **app.min.js LAMA** (confirmed via `cf-cache-status: HIT`, `Cache-Control: immutable, max-age=31536000`). Punca: URL asset guna cache-bust ikut app version (`?v5.9.1`) bukan content-hash — version number tak berubah, so Cloudflare ingat file tu sama, cache 1 tahun.
+- **Next action (kena user buat sendiri, perlukan akses Cloudflare dashboard):** pergi Cloudflare dashboard → zone `brodynhq.com` → Caching → Configuration → **"Purge Everything"** (atau purge by URL untuk `js/dist/app.min.js`). Action ni selamat & reversible, cuma clear CDN cache, paksa origin re-fetch.
+- Lepas purge, confirm fix dah live dengan reload `trainlog.brodynhq.com/dashboard` + test toggle Theme di profile menu.
+
 ## 2026-11-24 — Round 3: pivot ke fork open-source + hosting settle
 
 - **Strava subscription:** user dah ada subscription setahun — tak ada cost tambahan untuk API.
