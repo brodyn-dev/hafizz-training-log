@@ -25,7 +25,31 @@ Log progress, keputusan, dan pembetulan untuk projek ni. **Entri terbaru di ATAS
 
 - User share Strava API Brand Guidelines rasmi (developers.strava.com/guidelines). Rules penuh dah masuk [CLAUDE.md](CLAUDE.md) section "Peraturan/arahan tetap projek".
 - **Impact serta-merta:** nama Application yang diisi kat strava.com/settings/api tadi — `"My Strava Dashboard"` — ada perkataan "Strava" terus dalam nama, berisiko langgar rule "must not use the Strava name in your application name". **Cadangan: tukar nama** (contoh guna nama projek "Dreeve" sendiri, atau nama neutral lain), bukan "My Strava Dashboard". Boleh edit field tu di Strava settings bila-bila, tak perlu buat app baru.
-- Belum confirm: user dah tekan "Create" app di Strava ke belum.
+- User dah create Strava API app: Client ID `300302`, Category "Performance", icon custom (assets/app-icon.png) dah diupload. **Nota: Application Name masih kena disemak/tukar** dari "My Strava Dashboard" ke nama neutral — belum confirm dah tukar ke belum.
+- Strava app skrg "Standard Tier": 1 athlete, 200 req/15min, 2000/hari. Boleh "Upgrade" untuk naik ke 10 athlete/400 req kalau perlu nanti (tak perlu buat masa ni sebab single-player).
+
+## 2026-11-24 — Fork Dreeve siap & pushed
+
+- Confirm akaun GitHub user: **brodyn-dev**.
+- `gh repo fork dreeveapp/dreeve --clone=false` → fork jadi di **github.com/brodyn-dev/dreeve**.
+- Remote disetup dalam folder projek ni: `origin` = fork brodyn-dev, `upstream` = dreeveapp/dreeve asal (untuk pull update upstream lepas ni).
+- Checkout `origin/master` → semua codebase Dreeve (PHP/Symfony) kini dalam folder projek ni, sekali dengan CLAUDE.md/PROGRESS.md/assets/ yang kita dah buat (tiada collision nama fail).
+- Commit + push: CLAUDE.md, PROGRESS.md, assets/app-icon.png, skills-lock.json berjaya push ke `origin/master` (commit `cf69e7b01`).
+- **`.env.local` dah dicipta** (kosong, placeholder) — fail ni **ignored by git** (dalam `.gitignore` sedia ada: `/.env.local`), tempat selamat untuk simpan STRAVA_CLIENT_ID/SECRET/REFRESH_TOKEN sebenar. User kena isi sendiri terus dalam fail (bukan hantar value kat chat).
+## 2026-11-24 — Betulkan approach deployment (koreksi penting)
+
+- **Koreksi:** `.env.local` di root repo (yang kita buat awal) **salah konteks** — tu untuk contributor Dreeve run test suite/dev dari source, bukan untuk deploy/run app sebenar. Dah **dibuang**.
+- **Cara betul (ikut docs/src/content/docs/getting-started/installation.mdx):** Dreeve dijalankan dari **published Docker image** (`robiningelbrecht/dreeve:latest`), bukan build dari source kita punya. Fork `hafizz-training-log` tetap berguna untuk **customize code** lepas ni, tapi untuk run & guna app, tak perlu build dari source.
+- Setup baru kat folder **`deploy/`** (dalam projek ni, tapi berasingan logic dari source Dreeve):
+  - `deploy/docker-compose.yml` — dari template rasmi (2 container: `app` + `daemon`, port 8080)
+  - `deploy/.env` — **gitignored**, dah isi `IMPORT_MODE=stravaApi`, `APP_URL=http://localhost:8080`, `TZ=Asia/Kuala_Lumpur`, `APP_SECRET` (random generated). **Tinggal isi:** `STRAVA_CLIENT_ID`, `STRAVA_CLIENT_SECRET` (dari strava.com/settings/api), dan `ADMIN_PASSWORD_HASH` (generate lepas container jalan kali pertama).
+  - ⚠️ **PENTING:** `STRAVA_REFRESH_TOKEN` — JANGAN guna value "Refresh Token" yang Strava settings page tunjuk (confirmed dari docs: "tak akan jalan"). Biar `replace-me` — token sebenar diperoleh lepas buat OAuth flow kat `localhost:8080` first-launch.
+  - Authorization Callback Domain kat Strava settings (`localhost`, tanpa port) — **dah betul** ikut requirement docs ("Do not include a port number").
+  - Nota tambahan dari docs: check Strava privacy setting (strava.com/settings/privacy) — "Hide your activity maps from others completely" kena **OFF** supaya map aktiviti boleh nampak dalam Dreeve.
+- `.gitignore` ditambah: `/deploy/.env`, `/deploy/build`, `/deploy/storage`, `/deploy/watch`, `/deploy/backups`.
+- **Blocker semasa: Docker Desktop TAK installed** kat laptop ni (`docker` command not found, Docker Desktop.exe pun takde). Kena install dulu sebelum boleh `docker compose up -d`. Prerequisite rasmi Dreeve: Docker + Docker Compose je (boleh guna fail aktiviti .fit/.gpx/.tcx sebagai alternatif kalau tak nak guna Strava API pun, tapi kita dah pilih stravaApi mode).
+- Strava API Application di-rename ke **"Hafizz Training Log"** (compliant — tiada perkataan "Strava" dalam nama). Nota: ni nama OAuth app je, berlainan dari nama software "Dreeve" (engine/codebase) — tak perlu match.
+- Repo GitHub di-rename dari `brodyn-dev/dreeve` → **`brodyn-dev/hafizz-training-log`**. Confirmed fork relationship dengan `dreeveapp/dreeve` (upstream) masih intact lepas rename. Local remote `origin` URL dah disync.
 
 ## 2026-11-24 — Semua skill dijadikan global
 

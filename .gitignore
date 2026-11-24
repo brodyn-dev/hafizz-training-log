@@ -44,3 +44,11 @@ phpstan.neon
 /docs/dist
 /docs/.astro
 ###< docs ###
+
+###> local deploy (our own self-hosted instance, not upstream) ###
+/deploy/.env
+/deploy/build
+/deploy/storage
+/deploy/watch
+/deploy/backups
+###< local deploy ###

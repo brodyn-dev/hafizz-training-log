@@ -1,0 +1,44 @@
+services:
+  app:
+    # The Dreeve Docker image is available on Docker Hub and the GitHub Container Registry
+    image: robiningelbrecht/dreeve:latest
+    container_name: dreeve
+    restart: unless-stopped
+    volumes:
+      - ./build:/var/www/build
+      - ./storage/database:/var/www/storage/database
+      - ./storage/files:/var/www/storage/files
+      # Drop your .fit/.tcx/.gpx files in ./watch to have them imported.
+      - ./watch:/var/www/watch
+      # Local backups. Preferably point this at another disk or a NAS.
+      - ./backups:/var/www/backups
+    env_file: ./.env
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:2019/metrics"]
+      start_period: 60s
+    ports:
+      - 8080:8080
+    networks:
+      - dreeve-network
+
+  # This container runs the recurring background tasks:
+  daemon:
+    image: robiningelbrecht/dreeve:latest
+    container_name: dreeve-daemon
+    restart: unless-stopped
+    volumes:
+      - ./build:/var/www/build
+      - ./storage/database:/var/www/storage/database
+      - ./storage/files:/var/www/storage/files
+      - ./watch:/var/www/watch
+      - ./backups:/var/www/backups
+    env_file: ./.env
+    healthcheck:
+      test: ["CMD", "sh", "-c", "test -f /var/www/storage/database/dreeve.db && echo 'ok' || exit 1"]
+      start_period: 5s
+    command: ['bin/console', 'app:daemon:run']
+    networks:
+      - dreeve-network
+
+networks:
+  dreeve-network:
