@@ -42,7 +42,10 @@ export default function initDropdowns(rootNode) {
         });
         $dropdownEl.addEventListener('toggle', (e) => {
             $triggerEl.setAttribute('aria-expanded', String(e.newState === 'open'));
-            if (e.newState === 'open') return;
+            if (e.newState === 'open') {
+                document.dispatchEvent(new CustomEvent('dropdown:opened', {detail: {dropdownEl: $dropdownEl}}));
+                return;
+            }
 
             cleanup?.();
             cleanup = null;

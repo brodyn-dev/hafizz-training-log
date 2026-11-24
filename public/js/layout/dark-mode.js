@@ -11,13 +11,22 @@ export default class DarkModeManager {
     }
 
     attachEventListeners() {
+        this.syncCheckedState();
+
+        this.$themeInputs.forEach(($input) => {
+            $input.addEventListener('change', () => {
+                this.setPreference($input.value);
+            });
+        });
+
+        document.addEventListener('dropdown:opened', () => this.syncCheckedState());
+    }
+
+    syncCheckedState() {
         const preference = localStorage.getItem(this.storageKey) || 'system';
 
         this.$themeInputs.forEach(($input) => {
             $input.checked = $input.value === preference;
-            $input.addEventListener('change', () => {
-                this.setPreference($input.value);
-            });
         });
     }
 
