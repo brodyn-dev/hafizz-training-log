@@ -4,6 +4,31 @@ Log progress, keputusan, dan pembetulan untuk projek ni. **Entri terbaru di ATAS
 
 ---
 
+## 2026-11-25 — Penutup sesi panjang: semua settle & pushed
+
+**Status akhir:** working tree clean, semua commit (lihat log git) pushed ke `origin/master`. Docker image `dreeve-custom:local` live kat container `dreeve` (sama container untuk localhost:8080 & public `trainlog.brodynhq.com`) dah termasuk SEMUA perubahan sesi ni. Cloudflare cache dah di-purge terakhir kali (logo moss confirmed live via curl).
+
+**Ringkasan apa yang berlaku sepanjang sesi ni (kronologi, paling lama dulu):**
+1. Fix bug Theme toggle (Light/System/Dark) — highlight UI tak sync, root cause: sync checked state cuma jalan sekali masa page load.
+2. Lengkapkan design spec Hallmark yang tercicir — font Hanken Grotesk (heading/nombor) + tabular-nums.
+3. Fix width widget "Challenge consistency" (`w-full` kat table) — tapi kemudian **dikoreksi**: root cause sebenar width widget tu setting 50% default, bukan CSS bug.
+4. Setup "Most recent challenges" widget — scrape manual trophy-case HTML (Strava tak bagi API untuk ni).
+5. **Retheme penuh ke Moss** — accent + neutral gray scale (bukan swap accent je), sweep semua hardcoded warna (chart PHP classes, sport-type icons, map color, logo).
+6. Default sport-type tabs dashboard ke "Running" (bukan Cycling) — tambah `aria-selected` di 7 widget template.
+7. Tambah OG image untuk share link `/dashboard` (avatar+stats+moss bar) — reuse `OpenGraphImageCanvas` yang sedia ada untuk activity.
+8. Recolor logo Dreeve (favicon/PWA icon/badge) ke moss — sekali koreksi kesilapan sendiri (3 fail badge disangka logo Strava, rupanya logo Dreeve sendiri).
+
+**Pattern yang berulang sepanjang sesi (penting untuk next session, rujuk checklist bawah):**
+- **Setiap kali** ubah CSS/JS/PHP source → kena: rebuild (`tailwindcss cli` / `webpack` / docker build) → `docker compose up -d --no-deps --force-recreate app` (JANGAN tanpa `--no-deps`, boleh kacau import) → **`bin/console app:cache:render:clear`** (render cache Dreeve keyed by app version, tak auto-invalidate bila kita custom-build tanpa bump version) → verify.
+- **Static asset (CSS/JS/logo)** cache di browser + Cloudflare (`?v5.9.1` tak berubah bila kita custom-build) — lepas deploy, **mesti** purge Cloudflare (dashboard → Caching → Purge Everything) + clear cache browser tempatan (private tab) untuk nampak perubahan.
+- **Testing locally**: browser cache sendiri pun selalu stale — guna trick "buang `<link>` lama, create baru dengan `?bust=timestamp`" untuk force fresh fetch semasa verify kat localhost.
+- **OG image/social share baru**: lepas wire route baru, Facebook/WhatsApp kena **crawl pertama kali berjaya** sebelum preview jalan — guna `developers.facebook.com/tools/debug/` → "Scrape Again" untuk prime crawl pertama tu.
+
+**Untuk sambung kerja lepas ni:**
+- Backfill aktiviti Strava masih ~159 lagi tertangguh (daily rate limit) — auto-sambung via cron, tak perlu buat apa-apa.
+- Kalau nak ubah warna/theme lagi, atau widget/feature baru — ikut checklist rebuild di atas.
+- Kalau jumpa hex warna lama (`#E8552A`, `#F26722`, `#fc5200`) dalam code, **jangan terus assume** itu "brand Strava yang tak boleh sentuh" — render/check visual dulu (pelajaran dari insiden logo hari ni).
+
 ## 2026-11-25 — Recolor logo Dreeve ke moss + koreksi kesilapan awal
 
 User tanya: kalau tukar logo ke moss, risiko hilang kat dark mode? Jawapan: tak, sebab accent dipilih mid-lightness (bukan match background gelap), confirmed via kira contrast ratio (~4.6:1 light, ~3.9:1 dark) — prinsip sama macam oren asal yang dah consistent kekal visible dua-dua mode.
