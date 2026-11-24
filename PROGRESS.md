@@ -36,6 +36,38 @@ Log progress, keputusan, dan pembetulan untuk projek ni. **Entri terbaru di ATAS
 - Checkout `origin/master` → semua codebase Dreeve (PHP/Symfony) kini dalam folder projek ni, sekali dengan CLAUDE.md/PROGRESS.md/assets/ yang kita dah buat (tiada collision nama fail).
 - Commit + push: CLAUDE.md, PROGRESS.md, assets/app-icon.png, skills-lock.json berjaya push ke `origin/master` (commit `cf69e7b01`).
 - **`.env.local` dah dicipta** (kosong, placeholder) — fail ni **ignored by git** (dalam `.gitignore` sedia ada: `/.env.local`), tempat selamat untuk simpan STRAVA_CLIENT_ID/SECRET/REFRESH_TOKEN sebenar. User kena isi sendiri terus dalam fail (bukan hantar value kat chat).
+## 2026-11-24 — Custom build SIAP: design baru dah LIVE di app sebenar
+
+Sambung dari design direction yang approved — kali ni betul-betul apply ke app (bukan mockup je). Dilakukan masa Strava API block (daily rate limit), so zero risiko kacau import.
+
+**Apa yang ditukar (source, bukan runtime config):**
+- `public/css/tailwind.css` — `--color-primary: #F26722` → **`#E8552A`**, `--font-sans: Inter` → **`Manrope`**
+- `public/css/theme/dark-mode.css` — `--color-primary-soft` (light mode) dikemaskini match warna baru
+- `public/css/components/scroll-to.css` — hardcoded `rgba(242,103,34,...)` → `rgba(232,85,42,...)` (ni rupanya literal RGB decimal, bukan hex — Hallmark reminder: selalu grep format RGB jugak bila cari warna, bukan hex je)
+- `public/js/features/maps/map-colors.js` — `PRIMARY_COLOR` (warna route/polyline map) ikut sama
+- `templates/svg/badge/svg-dreeve-badge.html.twig` — embeddable badge SVG, semua icon stroke/fill
+- `src/Application/PageMetadata/OpenGraphImageCanvas.php` — bar bawah gambar OG auto-generate (dulu literal `0xFC5200`, warna brand **Strava** — sengaja tukar ke warna kita sendiri, elak visual association dgn Strava)
+- `templates/html/layout/app-shell.html.twig` — `theme-color` meta, + `<link>` Google Fonts Manrope
+- `templates/html/navigation/top-nav-bar.html.twig` — buang `hidden md:block` pada subtitle (fix asal: subtitle sentiasa nampak di phone)
+
+**Bug besar jumpa & fix (penting untuk masa depan):**
+- `docker/app/docker-entrypoint.sh` dan `bin/console` ada **CRLF line ending** (dari checkout Windows) → rosakkan shebang line bila jalan dalam Linux container (`exec ... no such file or directory`, `env: can't execute 'php'`). **Punca**: git checkout di Windows convert LF→CRLF automatik untuk fail text (bukan isu dalam git history asal). **Fix jangka panjang**: tambah `.gitattributes` (`*.sh text eol=lf`, `bin/* text eol=lf`) supaya tak berulang.
+
+**Cara build (sejak Dreeve ship sebagai published image, bukan build dari source):**
+1. `npm install` (Node dah ada local, PHP/Composer takde)
+2. `npx @tailwindcss/cli -i public/css/tailwind.css -o public/css/dist/tailwind.min.css --minify` (+ versi unminified)
+3. `node_modules/.bin/webpack --config webpack.config.js`
+4. `docker run --rm -v "$(pwd):/app" composer:2 install --no-dev --ignore-platform-req=ext-{bcmath,gd,intl,zstd}` (generate `vendor/` guna Docker, sebab PHP/Composer takde kat host)
+5. `docker build -f docker/app/Dockerfile -t dreeve-custom:local .`
+6. `deploy/docker-compose.yml`: tukar `image: robiningelbrecht/dreeve:latest` → **`image: dreeve-custom:local`** (app + daemon)
+7. `docker compose up -d`
+
+**Confirmed working:** local (`localhost:8080`) & public (`trainlog.brodynhq.com`) dua-dua HTTP 200, warna baru di CSS served, font Manrope loaded, subtitle navbar tiada `hidden` class lagi. Commit `08ac56830`, pushed.
+
+**Belum/boleh buat lepas ni:**
+- Backfill import masih tergantung (Strava daily limit) — retry lepas ~8am MYT
+- Kalau Dreeve keluar versi baru (`dreeveapp/dreeve` upstream update), kena re-build image custom ni semula (bukan auto-update macam guna published image) — ingat proses di atas
+
 ## 2026-11-24 — Design direction APPROVED (belum apply ke app sebenar)
 
 User tengok mockup (bukan app sebenar, Artifact preview je — [link mockup](https://claude.ai/artifact/MaYaLhgoSUXDdaWVMVhZRJ)) dan **approve** arah design ni untuk custom build nanti:
