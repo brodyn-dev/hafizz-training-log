@@ -4,6 +4,31 @@ Log progress, keputusan, dan pembetulan untuk projek ni. **Entri terbaru di ATAS
 
 ---
 
+## 2026-11-25 — Lengkapkan design spec yang tercicir (Hanken Grotesk + tabular-nums)
+
+User tanya: "redesign ni dah follow skill no-ai-slop dan hallmark?" — jawapan jujur lepas check code: **tak sepenuhnya**.
+
+- `no-ai-slop` — skill untuk tulisan/teks, bukan design visual. Tak relevan untuk kerja rebrand CSS/font ni.
+- `hallmark` — prinsip dia (elak gradient/neon, elak font banned-list, 1 accent + neutral) digunakan secara **manual/konsep** masa fasa "approve design direction", **bukan** invoke skill tu penuh. Approved spec sendiri sebut font patut **Manrope (body) + Hanken Grotesk (heading/nombor besar)** + `tabular-nums` untuk semua figure — tapi commit build sebenar (`08ac56830`) cuma apply Manrope untuk SEMUA (termasuk heading), dan `tabular-nums` yang jumpa dalam code rupanya dah sedia ada dari upstream Dreeid (bukan kita yang tambah).
+
+**Fix (lengkapkan 2 item yang tercicir):**
+- `public/css/tailwind.css` — tambah `--font-heading: "Hanken Grotesk", ui-sans-serif, system-ui` + base-layer rule `h1,h2,h3,h4,h5,h6 { font-family: var(--font-heading) }` (automatik cover semua widget title/heading, tak perlu edit setiap template).
+- `templates/html/layout/app-shell.html.twig` — tambah import Google Fonts Hanken Grotesk sekali dengan Manrope.
+- `templates/html/dashboard/widget/widget--intro-text.html.twig` — tambah class `font-heading tabular-nums` kat `kbdTagOpen` (chip nombor macam "3 684 km", "805 active days" dalam naratif dashboard).
+- **Scope sengaja dihadkan** kat heading (global) + chip naratif dashboard — TAK retrofit semua 25 widget dashboard (rolling-stats, eddington, dll) sebab terlalu luas untuk 1 session, risiko tinggi tanpa test menyeluruh. Boleh extend lepas ni kalau user nak.
+- Rebuild: `tailwindcss cli --minify` → docker build image → recreate container `app` je.
+- Commit `dfc607960`, pushed.
+
+**🐛 Jumpa isu baru masa verify — Dreeve "Render cache":**
+- Lepas rebuild+recreate container, perubahan **TAK nampak** di browser walaupun fail/image dah betul. Punca: Dreeve ada cache HTML page sendiri (`app:cache:render:clear` command), keyed by app VERSION — sebab kita tak bump version (masih 5.9.1) bila buat custom build, Dreeve ingat takde apa berubah & terus serve HTML lama.
+- **Fix:** run `docker compose exec app bin/console app:cache:render:clear` lepas setiap custom rebuild yang ubah template/CSS/JS.
+- **📌 PENTING untuk next session — tambah kat checklist rebuild:** lepas `docker compose up -d --no-deps --force-recreate app`, SENTIASA run `app:cache:render:clear` sekali, barulah verify.
+
+**⚠️ Isu cache LAIN yang confirmed (perlu user purge lagi):**
+- Static asset URL (`css/dist/tailwind.min.css?v5.9.1`, `js/dist/app.min.js?v5.9.1`) guna cache-bust ikut **app version**, bukan content-hash. Version tak bergerak bila kita custom-build sendiri → browser & Cloudflare cache **1 tahun** (`immutable`) walaupun content dah tukar.
+- **Next action (user):** purge Cloudflare cache SEKALI LAGI (dashboard → Caching → Purge Everything) — kali ni untuk CSS (tailwind.min.css), bukan JS. Lepas tu clear cache browser phone macam biasa (private tab / clear cached files) untuk confirm heading font (Hanken Grotesk) & tabular-nums nampak di `trainlog.brodynhq.com`.
+- **Root cause ni akan ulang setiap kali** kita custom-build CSS/JS tanpa bump app version — accept as known tradeoff buat masa ni (single-user project, purge manual okay), tak worth effort tukar ke content-hash versioning dalam upstream Dreeve.
+
 ## 2026-11-25 — Fix bug: Theme toggle (Light/System/Dark) tak sync visual
 
 User report: button Theme di profile dropdown "tak berfungsi seperti sepatutnya".
