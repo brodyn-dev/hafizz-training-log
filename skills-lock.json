@@ -1,0 +1,33 @@
+{
+  "version": 2,
+  "skills": {
+    "grill-me": {
+      "source": "mattpocock/skills",
+      "commit": "abeeaf95660ba9e8b7c753eb38f441ca707a8823",
+      "sourceType": "github",
+      "skillPath": "skills/productivity/grill-me/SKILL.md",
+      "computedHash": "ab1acb9fbd9eaee03da254abb8a8de228d1e7a07475fe959da4a5eefa34ea4b9"
+    },
+    "grill-with-docs": {
+      "source": "mattpocock/skills",
+      "commit": "abeeaf95660ba9e8b7c753eb38f441ca707a8823",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/grill-with-docs/SKILL.md",
+      "computedHash": "02e258f41d210f9b2e7cce9faf62b3c59e8fcebe5d2736369c3cd07d471324f8"
+    },
+    "grilling": {
+      "source": "mattpocock/skills",
+      "commit": "abeeaf95660ba9e8b7c753eb38f441ca707a8823",
+      "sourceType": "github",
+      "skillPath": "skills/productivity/grilling/SKILL.md",
+      "computedHash": "485451958784497cd4c4dbea13cb5bbb579da58fac0d0e45f3bcb310fab68ac7"
+    },
+    "no-ai-slop": {
+      "source": "petergyang/no-ai-slop",
+      "commit": "000650b156983f5159695b441477f4e63b25dc85",
+      "sourceType": "github",
+      "skillPath": "skills/no-ai-slop/SKILL.md",
+      "computedHash": "325408c3843e4a9d148a439fa665a0722d1248e23da8ef84646c9647ff4b3f88"
+    }
+  }
+}
