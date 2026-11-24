@@ -4,6 +4,23 @@ Log progress, keputusan, dan pembetulan untuk projek ni. **Entri terbaru di ATAS
 
 ---
 
+## 2026-11-25 — Setup "Most recent challenges" widget (manual trophy-case scrape)
+
+User compare dashboard kita dengan `demo.dreeve.app`, tanya kenapa widget **"Most recent challenges"** (badge Strava challenges) takde, ingatkan API limitation atau setting toggle.
+
+**Punca sebenar:** Strava **tak expose data Challenges melalui API rasmi langsung** (sama pattern dengan Club endpoints yang dah dibuang). Dreeve punya cara: **scrape HTML page "trophy case" Strava** (`strava.com/athletes/[ID]/trophy-case`) yang user kena copy-paste MANUAL sekali ke fail `deploy/storage/files/strava-challenge-history.html` (default dia placeholder kosong — confirmed tak pernah diisi sebelum ni).
+
+**Fix (settle):**
+1. User view-source page trophy-case (bukan Inspect — kena raw HTML), copy semua, paste ke fail tu (guna Notepad, bukan double-click sebab tu buka browser)
+2. Run `bin/console app:import:strava` — ni command yang SAMA dengan import aktiviti biasa, tapi dia include step `ImportChallenges` yang parse fail HTML tu & download gambar badge ke `storage/files/challenges/`
+3. `app:cache:render:clear` untuk refresh paparan
+
+**Confirmed berjaya:** 70+ challenge berjaya imported dengan gambar badge sebenar, widget "Most recent challenges" + sidebar nav item baru "Challenges (56)" dah muncul di dashboard (localhost, tak perlu rebuild docker image sebab ni cuma data runtime, bukan code change).
+
+**Nota penting untuk masa depan:** fail `strava-challenge-history.html` ni **static snapshot** — kalau nak update challenges baru lepas ni (dapat badge baru di Strava), kena ulang proses copy-paste manual ni + run import semula. Tiada cara automatik sebab Strava tak bagi API untuk benda ni.
+
+Widget **FTP history** dan **Zwift stats** pun sama pattern conditional-render (auto-hide bila takde data) — kemungkinan besar memang kosong untuk user ni sebab tak track power/FTP dan tak guna Zwift, bukan bug.
+
 ## 2026-11-25 — Retheme penuh ke Moss (bukan sekadar tukar accent)
 
 User tanya balik pasal rebrand lama — bila compare dengan demo Dreeve, nampak "sama je" sebab refine oren (`#E8552A`) terlalu rapat dengan oren asal (`#F26722`). User minta cuba kaler lain, mockup light+dark dulu (guna `visualize` widget), pilih **Moss**, dan explicit minta: *"bukan sekadar tukar kaler je... dia theme. the whole vibe tu tukar"* — confirmed ini teknik sebenar dalam skill **Hallmark** (load skill terus kali ni, bukan guna prinsip manual je macam dulu): neutral palette (grey/background/border) kena ikut hue bias sama dengan accent, bukan grey generic Tailwind ditampal warna atas.
