@@ -61,6 +61,11 @@ RUN rm -Rf docker
 RUN mkdir -p /var/www/var/cache/dev
 RUN mkdir -p /var/www/var/log
 
+# Build the country boundary asset (Natural Earth) — needed by heatmap/country filters.
+# Upstream published images build this as a separate step before packaging; our custom
+# build bakes it in here so it's never missing from the image.
+RUN bin/console app:geography:build-countries-asset
+
 # Install Shoutrrr.
 ARG TARGETARCH
 ENV TARGETARCH=${TARGETARCH}

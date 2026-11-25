@@ -4,6 +4,18 @@ Log progress, keputusan, dan pembetulan untuk projek ni. **Entri terbaru di ATAS
 
 ---
 
+## 2026-11-25 — Backfill aktiviti SIAP 100% (1035/1035) + fix bug custom image
+
+User minta "tarik baki data aktiviti" — jalankan `docker compose exec app bin/console app:import:strava` (containers semua healthy sebelum ni).
+
+**Jumpa bug baru (bukan rate limit):** proses import terhenti kat aktiviti #876/1035 dengan error `CountryGeographyAssets.php`: fail asset `/var/www/resources/countries/index.json.zst` **hilang/tak wujud** dalam container. Root cause: fail ni di-generate oleh step `make build-countries-asset` (command `bin/console app:geography:build-countries-asset`, download data **Natural Earth**) yang automatik jalan dalam proses build **image rasmi** Dreeve — tapi **tercicir** masa kita custom-build `dreeve-custom:local` (sejak retheme Moss, mula guna `build:` bukan `image:` di `docker-compose.yml`), sebab Dockerfile custom kita tak ada step tu.
+
+**Fix:** run terus `bin/console app:geography:build-countries-asset` dalam container (tak perlu rebuild image) → generate semula asset (239 negara, 4246 polygon, 4.0MB). Lepas tu sambung `app:import:strava` — kali ni **siap penuh tanpa kena rate limit** (habiskan 193/2000 daily quota je, 15 min window pun jauh dari limit), ambil masa ~15 minit (905s).
+
+**Confirmed:** dashboard tunjuk **"1 035 activities"** — backfill yang tertangguh sejak beberapa hari (876→1035) dah settle 100%.
+
+**Permanent fix (settle sekali gus):** tambah `RUN bin/console app:geography:build-countries-asset` terus dalam `docker/app/Dockerfile` (lepas `COPY . /var/www/` + `mkdir` var/cache & var/log, sebelum install Shoutrrr) — so setiap kali rebuild image custom lepas ni, asset tu **automatik** terbina dalam image, tak perlu ingat run manual lagi. Rebuild & verify: `docker build -f docker/app/Dockerfile -t dreeve-custom:local .` confirmed step baru jalan ("Wrote 239 countries...") → `docker compose up -d --no-deps --force-recreate app` → confirmed fail wujud dalam container + dashboard HTTP 200.
+
 ## 2026-11-25 — Penutup sesi panjang: semua settle & pushed
 
 **Status akhir:** working tree clean, semua commit (lihat log git) pushed ke `origin/master`. Docker image `dreeve-custom:local` live kat container `dreeve` (sama container untuk localhost:8080 & public `trainlog.brodynhq.com`) dah termasuk SEMUA perubahan sesi ni. Cloudflare cache dah di-purge terakhir kali (logo moss confirmed live via curl).
