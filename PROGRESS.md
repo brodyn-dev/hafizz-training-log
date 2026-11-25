@@ -4,6 +4,24 @@ Log progress, keputusan, dan pembetulan untuk projek ni. **Entri terbaru di ATAS
 
 ---
 
+## 2026-11-25 — Default theme ke Light (bukan ikut sistem) untuk share link
+
+User share link `trainlog.brodynhq.com` kat orang lain, risau kalau PC/phone mereka auto dark mode (OS-level), orang tu akan nampak dark mode walaupun user suka design **light mode**. Mahu: pelawat pertama kali (takde preference tersimpan) **default Light**, tapi kalau mereka explicit tukar sendiri ke Dark/System di toggle, pilihan tu tetap dihormati (persist).
+
+**Punca:** dua tempat guna fallback `'system'` bila `localStorage.getItem('theme')` kosong (first-time visitor) — ni yang sebabkan ikut `prefers-color-scheme` OS:
+- `templates/html/layout/app-shell.html.twig:18` — inline script set `data-theme` attribute awal page load (elak flash tema salah)
+- `public/js/layout/dark-mode.js` `syncCheckedState()` — tentukan radio button "Light/System/Dark" mana yang checked di toggle dropdown
+
+**Fix:** tukar fallback default kat 2 tempat tu dari `'system'` → `'light'`. Logic `setPreference()` (bila user explicit klik toggle) tak disentuh — so pilihan "System" dan "Dark" masih berfungsi macam biasa bila user pilih sendiri, cuma **default awal** je yang berubah.
+
+**Rebuild:** `webpack` (JS je) → `docker build` image custom → `docker compose up -d --no-deps --force-recreate app` → `app:cache:render:clear`.
+
+**Verified di localhost** (guna browser pane, emulate OS dark mode + localStorage kosong macam first-time visitor):
+- `data-theme` attribute = `"light"` walaupun `prefers-color-scheme: dark` = true, toggle dropdown pun tunjuk "Light" selected — confirmed default dah betul
+- Explicit klik "Dark" di toggle → persist lepas reload (`localStorage.theme = "dark"`, `data-theme = "dark"` kekal) — confirmed pilihan explicit user tetap dihormati
+
+**Belum settle:** belum push ke public domain — lepas push, ingat `app.min.js` kena purge Cloudflare cache + browser cache macam biasa (checklist rebuild yang dah dicatat berkali-kali) supaya orang yang share link nampak fix ni.
+
 ## 2026-11-25 — Backfill aktiviti SIAP 100% (1035/1035) + fix bug custom image
 
 User minta "tarik baki data aktiviti" — jalankan `docker compose exec app bin/console app:import:strava` (containers semua healthy sebelum ni).

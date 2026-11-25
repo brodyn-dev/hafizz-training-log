@@ -23,7 +23,7 @@ export default class DarkModeManager {
     }
 
     syncCheckedState() {
-        const preference = localStorage.getItem(this.storageKey) || 'system';
+        const preference = localStorage.getItem(this.storageKey) || 'light';
 
         this.$themeInputs.forEach(($input) => {
             $input.checked = $input.value === preference;
