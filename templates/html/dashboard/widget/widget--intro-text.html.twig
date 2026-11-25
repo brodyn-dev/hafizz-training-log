@@ -1,23 +1,23 @@
 {% autoescape false %}
-    {% set kbdTagOpen = '<kbd class="px-1 text-xs font-heading font-semibold tabular-nums text-gray-800 bg-gray-100 border border-gray-200 rounded-lg">' %}
-    {% set kdbTagClose = '</kbd>' %}
+    {% set numberTagOpen = '<span class="font-heading font-semibold tabular-nums text-primary">' %}
+    {% set numberTagClose = '</span>' %}
     <p class="mb-3">
-        {% set numberOfDaysAgo = kbdTagOpen ~ intro.getTotalDaysSinceFirstActivity() ~ kdbTagClose %}
+        {% set numberOfDaysAgo = numberTagOpen ~ intro.getTotalDaysSinceFirstActivity() ~ numberTagClose %}
         {% set startDate = '<span class="text-sm">' ~ intro.getStartDate()|formatDate('normal') ~ '</span>' %}
-        {% set totalDaysOfWorkingOut = kbdTagOpen ~ intro.getTotalDaysOfWorkingOut() ~ kdbTagClose %}
+        {% set totalDaysOfWorkingOut = numberTagOpen ~ intro.getTotalDaysOfWorkingOut() ~ numberTagClose %}
         {% trans with {'{numberOfDaysAgo}': numberOfDaysAgo, '{startDate}': startDate, '{totalDaysOfWorkingOut}': totalDaysOfWorkingOut} %}
-            Since I began working out {numberOfDaysAgo} ago on {startDate}, I've logged {totalDaysOfWorkingOut} active days of training and adventure.
+            I started training {numberOfDaysAgo} ago, on {startDate}. Since then I've logged {totalDaysOfWorkingOut} active days.
         {% endtrans %}
     </p>
     <p class="mb-3">
         {% set convertedIntroDistance = intro.getDistance()|convertMeasurement %}
         {% set convertedIntroElevation = intro.getElevation()|convertMeasurement %}
-        {% set totalDistance = kbdTagOpen ~ convertedIntroDistance.toFloat()|formatNumber(0) ~ ' ' ~ convertedIntroDistance.getSymbol() ~ kdbTagClose %}
-        {% set numberOfTripsAroundTheWorld = kbdTagOpen ~ (intro.getDistance().toFloat() / 40075)|formatNumber(2) ~ kdbTagClose %}
-        {% set numberOfTripsToTheMoonPercent = kbdTagOpen ~ (intro.getDistance().toFloat() / 384400 * 100)|formatNumber(1) ~ kdbTagClose %}
-        {% set totalElevation = kbdTagOpen ~ convertedIntroElevation.toFloat()|formatNumber(0) ~ ' ' ~ convertedIntroElevation.getSymbol() ~ kdbTagClose %}
-        {% set timesMountEverest = kbdTagOpen ~ (intro.getElevation().toFloat() / 8849)|formatNumber(1) ~ kdbTagClose %}
-        {% set totalTimeRecorded = kbdTagOpen ~ intro.getMovingTimeFormatted() ~ kdbTagClose %}
+        {% set totalDistance = numberTagOpen ~ convertedIntroDistance.toFloat()|formatNumber(0) ~ ' ' ~ convertedIntroDistance.getSymbol() ~ numberTagClose %}
+        {% set numberOfTripsAroundTheWorld = numberTagOpen ~ (intro.getDistance().toFloat() / 40075)|formatNumber(2) ~ numberTagClose %}
+        {% set numberOfTripsToTheMoonPercent = numberTagOpen ~ (intro.getDistance().toFloat() / 384400 * 100)|formatNumber(1) ~ numberTagClose %}
+        {% set totalElevation = numberTagOpen ~ convertedIntroElevation.toFloat()|formatNumber(0) ~ ' ' ~ convertedIntroElevation.getSymbol() ~ numberTagClose %}
+        {% set timesMountEverest = numberTagOpen ~ (intro.getElevation().toFloat() / 8849)|formatNumber(1) ~ numberTagClose %}
+        {% set totalTimeRecorded = numberTagOpen ~ intro.getMovingTimeFormatted() ~ numberTagClose %}
         {% trans with {
             '{totalDistance}': totalDistance,
             '{numberOfTripsAroundTheWorld}': numberOfTripsAroundTheWorld,
@@ -26,25 +26,25 @@
             '{timesMountEverest}': timesMountEverest,
             '{totalTimeRecorded}': totalTimeRecorded
         } %}
-            In that time, I’ve covered {totalDistance}, that's {numberOfTripsAroundTheWorld} trips around the world 🌍 or {numberOfTripsToTheMoonPercent}% of the way to the moon 🌕, and climbed an elevation of {totalElevation} which is {timesMountEverest} times Mount Everest 🏔. All up that's {totalTimeRecorded} of moving time 🎉.
+            I've covered {totalDistance} in that time, which is {numberOfTripsAroundTheWorld} trips around the world 🌍 or {numberOfTripsToTheMoonPercent}% of the way to the moon 🌕. I've also climbed {totalElevation} in elevation, {timesMountEverest} times Mount Everest 🏔. All of it adds up to {totalTimeRecorded} of moving time.
         {% endtrans %}
     </p>
-    <p>
+    <p class="mb-3">
         {% set convertedDailyAverage = intro.getDailyAverage()|convertMeasurement %}
         {% set convertedWeeklyAverage = intro.getWeeklyAverage()|convertMeasurement %}
         {% set convertedMonthlyAverage = intro.getMonthlyAverage()|convertMeasurement %}
-        {% set dailyAverage = kbdTagOpen ~ convertedDailyAverage.toFloat()|formatNumber(0) ~ ' ' ~ convertedDailyAverage.getSymbol() ~ kdbTagClose %}
-        {% set weeklyAverage = kbdTagOpen ~ convertedWeeklyAverage.toFloat()|formatNumber(0) ~ ' ' ~ convertedWeeklyAverage.getSymbol() ~ kdbTagClose %}
-        {% set monthlyAverage = kbdTagOpen ~ convertedMonthlyAverage.toFloat()|formatNumber(0) ~ ' ' ~ convertedMonthlyAverage.getSymbol() ~ kdbTagClose %}
+        {% set dailyAverage = numberTagOpen ~ convertedDailyAverage.toFloat()|formatNumber(0) ~ ' ' ~ convertedDailyAverage.getSymbol() ~ numberTagClose %}
+        {% set weeklyAverage = numberTagOpen ~ convertedWeeklyAverage.toFloat()|formatNumber(0) ~ ' ' ~ convertedWeeklyAverage.getSymbol() ~ numberTagClose %}
+        {% set monthlyAverage = numberTagOpen ~ convertedMonthlyAverage.toFloat()|formatNumber(0) ~ ' ' ~ convertedMonthlyAverage.getSymbol() ~ numberTagClose %}
         {% trans with {'{dailyAverage}': dailyAverage, '{weeklyAverage}': weeklyAverage, '{monthlyAverage}': monthlyAverage} %}
-            On average, that works out to {dailyAverage} per day, a weekly average of {weeklyAverage} and a monthly average of {monthlyAverage} 🐣.
+            On average that's {dailyAverage} a day, {weeklyAverage} a week, and {monthlyAverage} a month.
         {% endtrans %}
     </p>
     <p>
-        {% set caloriesBurned = kbdTagOpen ~ intro.getCalories()|formatNumber(0) ~ kdbTagClose %}
-        {% set numberOfPizzaSlices = kbdTagOpen ~ (intro.getCalories() / 270)|formatNumber(0) ~ kdbTagClose %}
+        {% set caloriesBurned = numberTagOpen ~ intro.getCalories()|formatNumber(0) ~ numberTagClose %}
+        {% set numberOfPizzaSlices = numberTagOpen ~ (intro.getCalories() / 270)|formatNumber(0) ~ numberTagClose %}
         {% trans with {'{caloriesBurned}': caloriesBurned, '{numberOfPizzaSlices}': numberOfPizzaSlices} %}
-            Powered by an estimated {caloriesBurned} calories, or roughly {numberOfPizzaSlices} slices of pizza 🍕.
+            All that burned an estimated {caloriesBurned} calories — about {numberOfPizzaSlices} slices of pizza 🍕.
         {% endtrans %}
     </p>
 {% endautoescape %}

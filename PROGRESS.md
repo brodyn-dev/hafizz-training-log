@@ -4,6 +4,22 @@ Log progress, keputusan, dan pembetulan untuk projek ni. **Entri terbaru di ATAS
 
 ---
 
+## 2026-11-25 — Reword naratif dashboard "intro text" + buang kotak nombor
+
+User rasa teks naratif dashboard ("Since I began working out...") rasa macam template AI-generated je, minta rewrite. Guna skill **no-ai-slop** untuk edit, + web research pattern Spotify Wrapped/Strava Year in Sport untuk idea (kesimpulan research: recap yang bagus pair 1 stat dengan 1 playful hook, bukan cram banyak fakta+emoji dalam 1 ayat — approach ni yang jadi asas rewrite).
+
+**Mockup dulu** (guna `visualize` widget, 2 pusingan) sebelum sentuh code — user approve lepas tengok perbandingan A (kotak nombor sedia ada) vs B (tanpa kotak, bold+warna accent): **pilih B**, sebab nak "senang baca, mudah di mata dekat di hati" untuk pelawat link share — kotak border+background rasa lebih macam dashboard-data daripada cerita yang mengalir.
+
+**Fix** (`templates/html/dashboard/widget/widget--intro-text.html.twig`):
+- Reword 4 perenggan: buang filler ("and adventure"), pecah ayat ke-2 yang asalnya cram 4 fakta+3 emoji dalam 1 ayat panjang jadi 2 ayat, buang emoji dekoratif yang tak terikat terus dengan fakta (🎉 🐣), tukar "Powered by..." (passive) ke ayat direct/active voice. Emoji yang kekal (🌍🌕🏔🍕) semua terus terikat dengan perbandingan spesifik, bukan sekadar hiasan.
+- Semua 14 placeholder Twig (nombor yang auto-update ikut data Strava sebenar) **tak disentuh** — cuma reword ayat sekeliling dia.
+- Tukar styling nombor: `numberTagOpen`/`numberTagClose` (dulu nama `kbdTagOpen`/`kdbTagClose`, ada typo) dari `<kbd>` pill (bg-gray-100, border, rounded) → `<span>` bold+`text-primary` (moss) je, tanpa kotak.
+- **Jumpa & fix bug kecil** masa tengok code: perenggan ke-3 ("On average...") rupanya **tiada `mb-3`** (margin-bottom) dalam code asal — akan rapat terus dengan perenggan ke-4 tanpa jarak. Ditambah supaya 4-4 perenggan ada jarak konsisten.
+
+Rebuild: `docker build` image custom → `docker compose up -d --no-deps --force-recreate app` → `app:cache:render:clear`. **Verified** di localhost (screenshot browser pane) — 4 perenggan jelas berjarak, nombor moss bold tanpa kotak, teks baru nampak natural bukan template-ish.
+
+**Belum settle:** belum commit/push.
+
 ## 2026-11-25 — Default theme ke Light (bukan ikut sistem) untuk share link
 
 User share link `trainlog.brodynhq.com` kat orang lain, risau kalau PC/phone mereka auto dark mode (OS-level), orang tu akan nampak dark mode walaupun user suka design **light mode**. Mahu: pelawat pertama kali (takde preference tersimpan) **default Light**, tapi kalau mereka explicit tukar sendiri ke Dark/System di toggle, pilihan tu tetap dihormati (persist).
