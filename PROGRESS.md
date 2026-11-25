@@ -4,6 +4,25 @@ Log progress, keputusan, dan pembetulan untuk projek ni. **Entri terbaru di ATAS
 
 ---
 
+## 2026-11-25 — Rebrand domain ke metrain.brodynhq.com + percubaan Oracle gagal (ditangguh)
+
+**Konteks:** user nak web "sentiasa available" tanpa laptop kena on 24/7, + nak branding baru (bukan "My Strava Dashboard"/"trainlog"). Explore banyak pilihan hosting (Oracle Free, Hetzner VPS, Vercel, fon Android) — rujuk perbincangan panjang sesi ni untuk reasoning penuh setiap pilihan.
+
+**Settle (DONE, live sekarang):**
+- Domain production bertukar dari `trainlog.brodynhq.com` → **`metrain.brodynhq.com`** (percuma, subdomain brodynhq.com sedia ada, bukan beli domain baru macam `metrain.stream`/`.com` yang sempat dipertimbang — `.stream` khususnya **tak digalakkan** sebab reputasi "TLD spam")
+- Cloudflare Tunnel (`dreeve-trainlog`): route `metrain.brodynhq.com` → `http://app:8080` ditambah, route `trainlog.brodynhq.com` lama **dibuang** (confirmed: `metrain` HTTP 200, `trainlog` dah mati HTTP 000)
+- `deploy/.env` → `APP_URL=https://metrain.brodynhq.com` (confirmed via `og:url` meta tag), container `app` di-recreate + `app:cache:render:clear`
+- WhatsApp/Facebook preview **di-prime** via Facebook Sharing Debugger ("Scrape Again") untuk URL baru — confirmed preview penuh keluar (avatar, stats, logo moss)
+- Docker build cache dibersihkan (`docker builder prune`) — balikkan **6.65GB** ruang disk, tiada kesan ke image/container yang jalan
+- Confirmed repo `brodyn-dev/hafizz-training-log` di GitHub **PUBLIC** — checked git history, tiada secret (`.env`, token) pernah ter-commit, selamat
+
+**⚠️ BELUM settle — Oracle Cloud Always Free (untuk hosting 24/7 tanpa laptop):**
+- Cuba signup **2 kali**, dua-dua **gagal** dengan error generic "unable to complete sign up" (lepas verification kad passed/green check pun) — common issue Oracle, bukan salah user
+- **Dua-dua kad kena verification hold kecil** — hold sementara (ikut Oracle, auto-release 3-5 hari bekerja), bukan caj sebenar, tapi **jangan cuba lagi dalam masa terdekat** (elak hold ke-3)
+- **Keputusan: tangguh dulu** topik hosting 24/7 ni sepenuhnya (pertimbangan kos). Setup sekarang (laptop + Cloudflare Tunnel, percuma) **kekal dipakai** — cukup untuk share link dengan kawan/profile, asalkan laptop on waktu nak share
+- **Next session:** JANGAN push topik Oracle/VPS lagi melainkan user sendiri bawa balik topik tu. Kalau user nak cuba Oracle semula lepas ni — boleh cuba signup sekali lagi (pernah dilaporkan berjaya lepas cooldown beberapa hari), guna home region **Singapore (Singapore)** (bukan "Singapore West")
+- Pilihan lain yang **dah dinilai & ditolak**: Vercel (serverless, tak support Docker/persistent DB/daemon), host kat fon Android (Docker tak jalan tanpa root, perlu re-engineer seluruh deployment tanpa Docker — effort besar, tak berbaloi)
+
 ## 2026-11-25 — Reword naratif dashboard "intro text" + buang kotak nombor
 
 User rasa teks naratif dashboard ("Since I began working out...") rasa macam template AI-generated je, minta rewrite. Guna skill **no-ai-slop** untuk edit, + web research pattern Spotify Wrapped/Strava Year in Sport untuk idea (kesimpulan research: recap yang bagus pair 1 stat dengan 1 playful hook, bukan cram banyak fakta+emoji dalam 1 ayat — approach ni yang jadi asas rewrite).
