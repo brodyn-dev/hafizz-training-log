@@ -4,6 +4,18 @@ Log progress, keputusan, dan pembetulan untuk projek ni. **Entri terbaru di ATAS
 
 ---
 
+## 2026-11-26 — Merge upstream v5.9.2 (PHP 8.6, photo ETag caching, dashboard perf fixes)
+
+User share link release upstream (`dreeveapp/dreeve` v5.9.2) dan minta integrate — dengan syarat jelas: custom setup kita (Moss theme, light-default theme, dashboard intro text rewrite, dll) **tak boleh rosak**, prioriti utama.
+
+**Dapatan sebelum merge:** check punca, sebahagian besar feature v5.9.2 (Disc Golf, System dark mode toggle, Total descent, RPE/feel import, multi API key, FIT import laju, refresh dari stored file, fix fullscreen/HR chart) **dah ada** dalam fork kita sebelum ni (pernah auto-merge upstream/master lepas v5.9.1 tapi sebelum tag v5.9.2 keluar). Baki yang betul-betul baru: PHP 8.6 upgrade (#3107), activity photos guna route + ETag sendiri (#3112), buang shadow theme switcher (#3111), performance fixes gear/yearly-stats/peak-power/HR-distribution (#3120), test cleanup besar (#3117, tak affect runtime).
+
+**Merge:** `git merge upstream/master` — **auto-merge bersih, tiada conflict**. Verified manual lepas merge (sebelum commit): `CLAUDE.md`/`PROGRESS.md` tak tersentuh, `docker/app/Dockerfile` custom step (`app:geography:build-countries-asset`) kekal, logo moss `#5F7A4D` kekal, `widget--intro-text.html.twig` (rewrite + numberTag styling) kekal, fallback theme `'light'` (bukan `'system'`) kekal di `app-shell.html.twig` + `dark-mode.js`. Satu-satunya perubahan kat fail yang kita pernah custom ialah `top-nav-bar.html.twig` — upstream buang class `shadow-xs` je dari theme switcher pill (cosmetic upstream punya, tak clash dengan warna Moss kita).
+
+**Rebuild & verify (localhost, browser pane):** `docker build` (base image tukar `frankenphp:1-php8.5-alpine` → `1-php8.6-alpine`) → `docker compose up -d --no-deps --force-recreate app daemon` (dalam folder `deploy/`, bukan root — root `docker-compose.yml` perlukan `.env.local` yang tiada) → `app:cache:render:clear`. Container healthy. Checked: Dashboard (moss colors + intro text utuh), Gear page (perf fix #3120 jalan betul, data tetap tepat), theme switcher (tiada shadow, Light tetap default/selected), Photos page (route baru `/files/activities/<uuid>.jpg` return 200, load lepas ~2s lazy-load — sempat nampak placeholder dulu, bukan bug).
+
+**Belum settle:** belum push ke `origin/master` — tunggu confirm user dulu sebelum push (ada perubahan besar: PHP version base image, kena pastikan production container pun rebuild dengan betul lepas push).
+
 ## 2026-11-25 — Rebrand domain ke metrain.brodynhq.com + percubaan Oracle gagal (ditangguh)
 
 **Konteks:** user nak web "sentiasa available" tanpa laptop kena on 24/7, + nak branding baru (bukan "My Strava Dashboard"/"trainlog"). Explore banyak pilihan hosting (Oracle Free, Hetzner VPS, Vercel, fon Android) — rujuk perbincangan panjang sesi ni untuk reasoning penuh setiap pilihan.
