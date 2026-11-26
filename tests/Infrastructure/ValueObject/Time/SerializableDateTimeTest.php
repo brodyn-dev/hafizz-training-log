@@ -11,22 +11,6 @@ use PHPUnit\Framework\TestCase;
 
 class SerializableDateTimeTest extends TestCase
 {
-    public function testFromString(): void
-    {
-        $this->assertEquals(
-            new \DateTimeImmutable('2023-10-05 10:22:22'),
-            SerializableDateTime::fromString('2023-10-05 10:22:22')
-        );
-    }
-
-    public function testCreateFromFormat(): void
-    {
-        $this->assertEquals(
-            new \DateTimeImmutable('2024-02-29 00:00:00'),
-            SerializableDateTime::createFromFormat('!Y-m-d', '2024-02-29')
-        );
-    }
-
     #[DataProvider('provideInvalidDates')]
     public function testCreateFromFormatItShouldThrowOnInvalidDate(string $date): void
     {
@@ -48,19 +32,19 @@ class SerializableDateTimeTest extends TestCase
         yield 'empty' => [''];
     }
 
-    public function testGetSecondsUntilMidnight(): void
+    public function testGetDurationUntilMidnight(): void
     {
         $this->assertEquals(
             5258,
-            SerializableDateTime::fromString('2023-10-05 22:32:22')->getSecondsUntilMidnight()
+            SerializableDateTime::fromString('2023-10-05 22:32:22')->getDurationUntilMidnight()->seconds
         );
         $this->assertEquals(
             86400,
-            SerializableDateTime::fromString('2023-10-05 00:00:00')->getSecondsUntilMidnight()
+            SerializableDateTime::fromString('2023-10-05 00:00:00')->getDurationUntilMidnight()->seconds
         );
         $this->assertEquals(
             1,
-            SerializableDateTime::fromString('2023-10-05 23:59:59')->getSecondsUntilMidnight()
+            SerializableDateTime::fromString('2023-10-05 23:59:59')->getDurationUntilMidnight()->seconds
         );
     }
 

@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Infrastructure\Time\Clock;
 
 use App\Infrastructure\Time\Clock\Clock;
 use App\Infrastructure\ValueObject\Time\SerializableDateTime;
 use Symfony\Component\Clock\MockClock;
+use Time\Duration;
 
 class PausedClock implements Clock
 {
@@ -27,8 +30,8 @@ class PausedClock implements Clock
         return SerializableDateTime::createFromInterface($this->clock->now());
     }
 
-    public function sleep(int $seconds): void
+    public function sleep(Duration $duration): void
     {
-        $this->clock->sleep($seconds);
+        $this->clock->sleep($duration->seconds);
     }
 }

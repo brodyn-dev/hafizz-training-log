@@ -37,7 +37,7 @@ final readonly class GearMaintenanceDueRequestHandler
                     RootCacheTag::ACTIVITIES,
                     RootCacheTag::GEAR,
                 ),
-                ttlInSeconds: $this->clock->now()->getSecondsUntilMidnight(),
+                ttl: $this->clock->now()->getDurationUntilMidnight(),
             ),
             render: fn (): string => $this->renderFor(),
         );
@@ -48,7 +48,9 @@ final readonly class GearMaintenanceDueRequestHandler
     private function renderFor(): string
     {
         return $this->twig->load('html/gear/maintenance/_maintenance-due.html.twig')->render([
-            'maintenanceTaskIsDue' => !$this->maintenanceTaskProgressCalculator->getGearIdsThatHaveDueTasks()->isEmpty(),
+            'maintenanceTaskIsDue' => !$this->maintenanceTaskProgressCalculator->getGearIdsThatHaveDueTasks(
+                $this->maintenanceTaskProgressCalculator->calculateStatuses(),
+            )->isEmpty(),
         ]);
     }
 }

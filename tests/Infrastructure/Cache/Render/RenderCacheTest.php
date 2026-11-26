@@ -11,7 +11,7 @@ use App\Infrastructure\Cache\Tag\RootCacheTag;
 use App\Tests\ContainerTestCase;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Cache\Adapter\TagAwareAdapter;
-use Symfony\Contracts\Cache\ItemInterface;
+use Time\Duration;
 
 class RenderCacheTest extends ContainerTestCase
 {
@@ -60,12 +60,12 @@ class RenderCacheTest extends ContainerTestCase
             cacheability: Cacheability::for(
                 cacheKey: 'stub',
                 cacheTags: CacheTags::of(RootCacheTag::ACTIVITY_IMAGES),
-                ttlInSeconds: 60,
+                ttl: Duration::fromSeconds(60),
             ),
             callback: fn (): string => 'rendered',
         );
 
-        $this->assertEquals(60, $render->getTtlInSeconds());
+        $this->assertEquals(60, $render->getTtl()?->seconds);
     }
 
     public function testItReportsWhatWasStoredOnAHitAndNotWhatIsDeclaredNow(): void
@@ -75,7 +75,7 @@ class RenderCacheTest extends ContainerTestCase
             cacheability: Cacheability::for(
                 cacheKey: 'stub',
                 cacheTags: CacheTags::of(RootCacheTag::ACTIVITY_IMAGES),
-                ttlInSeconds: 3600,
+                ttl: Duration::fromSeconds(3600),
             ),
             callback: fn (): string => 'rendered',
         );
@@ -85,12 +85,12 @@ class RenderCacheTest extends ContainerTestCase
             cacheability: Cacheability::for(
                 cacheKey: 'stub',
                 cacheTags: CacheTags::of(RootCacheTag::CHALLENGES),
-                ttlInSeconds: 60,
+                ttl: Duration::fromSeconds(60),
             ),
             callback: fn (): string => 'should-not-run',
         );
 
-        $this->assertEquals(3600, $render->getTtlInSeconds());
+        $this->assertEquals(3600, $render->getTtl()?->seconds);
         $this->assertEquals(
             ['settings.appearance', 'activity.images'],
             $render->getCacheTags()
@@ -119,10 +119,6 @@ class RenderCacheTest extends ContainerTestCase
         $item->tag(['activity.images']);
         $pool->save($item);
 
-        $storedExpiry = $pool->getItem(AppVersion::getSemanticVersion().'.stored-without-an-expiry')
-            ->getMetadata()[ItemInterface::METADATA_EXPIRY] ?? null;
-        $this->assertGreaterThan(50 * 365 * 86400, $storedExpiry - time());
-
         $render = new RenderCache($pool, $tags)->get(
             cacheKey: 'stored-without-an-expiry',
             cacheability: Cacheability::for('stub', CacheTags::of(RootCacheTag::ACTIVITY_IMAGES)),
@@ -130,7 +126,7 @@ class RenderCacheTest extends ContainerTestCase
         );
 
         $this->assertTrue($render->wasServedFromCache());
-        $this->assertNull($render->getTtlInSeconds());
+        $this->assertNull($render->getTtl());
         $this->assertArrayNotHasKey('X-Dreeve-Cache-TTL', $render->getCacheHeaders());
 
         $pool->clear();

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Http\Response;
 
 use Symfony\Component\HttpFoundation\Response;
+use Time\Duration;
 
 final readonly class CachePolicy
 {
@@ -12,8 +13,9 @@ final readonly class CachePolicy
         private bool $isPublic,
         private bool $noStore = false,
         private bool $revalidate = false,
-        private ?int $maxAge = null,
+        private ?Duration $maxAge = null,
         private bool $immutable = false,
+        private ?string $etag = null,
     ) {
     }
 
@@ -37,9 +39,14 @@ final readonly class CachePolicy
         return clone ($this, ['revalidate' => true]);
     }
 
-    public function maxAge(int $seconds): self
+    public function revalidateWithEtag(string $etag): self
     {
-        return clone ($this, ['maxAge' => $seconds]);
+        return clone ($this, ['revalidate' => true, 'etag' => $etag]);
+    }
+
+    public function maxAge(Duration $maxAge): self
+    {
+        return clone ($this, ['maxAge' => $maxAge]);
     }
 
     public function immutable(): self
@@ -60,12 +67,12 @@ final readonly class CachePolicy
             'public' => $this->isPublic,
             'no_store' => $this->noStore,
             'no_cache' => $this->revalidate,
-            'max_age' => $this->maxAge,
+            'max_age' => $this->maxAge?->seconds,
             'immutable' => $this->immutable,
         ]);
 
         if ($this->revalidate) {
-            $response->setEtag(hash('xxh128', (string) $response->getContent()));
+            $response->setEtag($this->etag ?? hash('xxh128', (string) $response->getContent()));
         }
 
         return $response;

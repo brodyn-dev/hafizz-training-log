@@ -52,7 +52,7 @@ final readonly class GearMaintenanceRequestHandler
                     RootCacheTag::GEAR,
                 ),
                 cacheContexts: CacheContexts::of(AuthenticatedCacheContext::class),
-                ttlInSeconds: $this->clock->now()->getSecondsUntilMidnight(),
+                ttl: $this->clock->now()->getDurationUntilMidnight(),
             ),
             render: fn (): string => $this->renderFor(),
             navigationSection: NavigationSection::GEAR,
@@ -108,12 +108,14 @@ final readonly class GearMaintenanceRequestHandler
             }
         }
 
+        $maintenanceTaskStatuses = $this->maintenanceTaskProgressCalculator->calculateStatuses();
+
         return $this->twig->load('html/gear/maintenance/gear-maintenance.html.twig')->render([
             'gearsWithComponents' => array_values($gearsWithComponents),
             'componentsNotFitted' => $componentsNotFitted,
             'parentComponentLabels' => $parentComponentLabels,
-            'gearIdsThatHaveDueTasks' => $this->maintenanceTaskProgressCalculator->getGearIdsThatHaveDueTasks(),
-            'maintenanceTaskStatuses' => $this->maintenanceTaskProgressCalculator->calculateStatuses(),
+            'gearIdsThatHaveDueTasks' => $this->maintenanceTaskProgressCalculator->getGearIdsThatHaveDueTasks($maintenanceTaskStatuses),
+            'maintenanceTaskStatuses' => $maintenanceTaskStatuses,
             'isFeatureEnabled' => true,
         ]);
     }

@@ -7,7 +7,7 @@ RUN go mod download
 COPY docker/fit-tool/ ./
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=${TARGETARCH} go build -ldflags="-s -w" -o /out/fit-tool .
 
-FROM php:8.5-cli
+FROM php:8.6-cli
 
 COPY docker/php-cli/php.ini "${PHP_INI_DIR}/conf.d/docker-php-config.ini"
 
@@ -30,22 +30,16 @@ RUN apt-get update && apt-get install -y \
     acl \
     zstd
 
-RUN docker-php-ext-install pdo
-RUN docker-php-ext-install zip
-RUN docker-php-ext-configure gd --with-jpeg --with-freetype && docker-php-ext-install gd
-RUN docker-php-ext-install exif
-RUN docker-php-ext-install mbstring
-RUN docker-php-ext-install bcmath
-RUN docker-php-ext-install pcntl
-RUN docker-php-ext-install intl
+RUN docker-php-ext-configure gd --with-jpeg --with-freetype \
+ && docker-php-ext-install -j"$(nproc)" zip gd exif mbstring bcmath pcntl intl
+
+RUN curl -L -o "pie.phar" https://github.com/php/pie/releases/download/1.5.5/pie.phar
 
 # Install zstd
-RUN pecl install zstd \
-    && docker-php-ext-enable zstd
+RUN php pie.phar install kjdev/zstd
 
 # Install Xdebug
-RUN curl -L -o "pie.phar" https://github.com/php/pie/releases/download/1.3.1/pie.phar
-RUN php pie.phar install xdebug/xdebug
+RUN php pie.phar install xdebug/xdebug:^3.6@alpha
 RUN docker-php-ext-enable xdebug
 COPY docker/php-cli/xdebug.ini "${PHP_INI_DIR}/conf.d"
 RUN rm pie.phar
@@ -63,7 +57,7 @@ RUN apt-get install -y nodejs
 # Install Shoutrrr.
 ARG TARGETARCH
 ENV TARGETARCH=${TARGETARCH}
-ARG SHOUTRRR_VERSION="0.25.0"
+ARG SHOUTRRR_VERSION="0.25.1"
 
 RUN if [ "${TARGETARCH}" = "arm64" ]; then \
       curl -fL -o shoutrrr.tar.gz "https://github.com/nicholas-fedor/shoutrrr/releases/download/v$SHOUTRRR_VERSION/shoutrrr_linux_arm64v8_${SHOUTRRR_VERSION}.tar.gz"; \
