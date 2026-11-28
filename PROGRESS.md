@@ -4,6 +4,16 @@ Log progress, keputusan, dan pembetulan untuk projek ni. **Entri terbaru di ATAS
 
 ---
 
+## 2026-11-28 — Tarik data Strava terbaru (sync biasa)
+
+User minta "tarik data masuk ke dreeve" — run `docker compose exec app bin/console app:import:strava` (3 container semua healthy, up 34 jam sebelum ni).
+
+**Hasil:** 1 aktiviti baru ("Morning Run" 28-11-2026) + update data aktiviti lama (HR/cadence/dll yang Strava kadang kemas kini lepas sync). **Tiada isu** — tak kena rate limit (guna 17/2000 quota harian je), masa ambil 60s je (jauh lebih laju dari backfill besar sebelum ni sebab bukan first-time import).
+
+Lepas import: `app:cache:render:clear` (ikut checklist standard) → verify di `localhost:8080/dashboard` (browser pane) — confirmed "Morning Run 28-11-26" dah muncul paling atas list aktiviti terkini.
+
+**Tak perlu rebuild Docker image** untuk ni — import data je, bukan code/template change.
+
 ## 2026-11-26 — Merge upstream v5.9.2 (PHP 8.6, photo ETag caching, dashboard perf fixes)
 
 User share link release upstream (`dreeveapp/dreeve` v5.9.2) dan minta integrate — dengan syarat jelas: custom setup kita (Moss theme, light-default theme, dashboard intro text rewrite, dll) **tak boleh rosak**, prioriti utama.
