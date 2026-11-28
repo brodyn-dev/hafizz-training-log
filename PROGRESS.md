@@ -4,6 +4,12 @@ Log progress, keputusan, dan pembetulan untuk projek ni. **Entri terbaru di ATAS
 
 ---
 
+## 2026-11-28 — Sync kedua: update title aktiviti 28-11-2026
+
+User minta "tarik balik data, ada update sikit" lepas sync pagi tadi — rupanya dia edit title aktiviti kat Strava sendiri (**bukan** aktiviti baru). Run `app:import:strava` semula (masih 1037/1037, semua "Updated activity" je, takde "Imported" baru).
+
+**Perubahan:** "Morning Run" (28-11-2026) → **"Circuit Dash KBS X SIC Run 2.0"** (nampak macam nama race/event rasmi). Clear render cache → verify localhost, title baru dah nampak di dashboard + activity detail page.
+
 ## 2026-11-28 — Tarik data Strava terbaru (sync biasa)
 
 User minta "tarik data masuk ke dreeve" — run `docker compose exec app bin/console app:import:strava` (3 container semua healthy, up 34 jam sebelum ni).
